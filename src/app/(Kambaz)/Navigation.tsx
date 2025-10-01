@@ -6,7 +6,7 @@ import { ListGroup, ListGroupItem } from "react-bootstrap";
 import Link from "next/link";
 export default function KambazNavigation() {
  return (
-   <ListGroup id="wd-kambaz-navigation" style={{ width: 120 }}
+   <ListGroup id="wd-kambaz-navigation" style={{ width: 110 }}
          className="rounded-0 position-fixed bottom-0 top-0 d-none d-md-block bg-black z-2">
      <ListGroupItem className="bg-black border-0 text-center" as="a"
               target="_blank" href="https://www.northeastern.edu/" id="wd-neu-link">
@@ -27,6 +27,34 @@ export default function KambazNavigation() {
        </Link>
      </ListGroupItem>
      {/* complete styling the rest of the links */}
+     <ListGroupItem className="border-0 bg-black text-center">
+       <Link href="/Courses" id="wd-courses-link" className="text-white text-decoration-none">
+         <LiaBookSolid className="fs-1 text-danger" />
+         <br />
+         Courses
+       </Link>
+     </ListGroupItem>
+     <ListGroupItem className="border-0 bg-black text-center">
+       <Link href="/Calendar" id="wd-calendar-link" className="text-white text-decoration-none">
+         <IoCalendarOutline className="fs-1 text-danger" />
+         <br />
+         Calendar
+       </Link>
+     </ListGroupItem>
+     <ListGroupItem className="border-0 bg-black text-center">
+       <Link href="/Inbox" id="wd-inbox-link" className="text-white text-decoration-none">
+         <FaInbox className="fs-1 text-danger" />
+         <br />
+         Inbox
+       </Link>
+     </ListGroupItem>
+     <ListGroupItem className="border-0 bg-black text-center">
+       <Link href="/Labs" id="wd-labs-link" className="text-white text-decoration-none">
+         <LiaCogSolid className="fs-1 text-danger" />
+         <br />
+         Labs
+       </Link>
+     </ListGroupItem>
    </ListGroup>
 );}
 
