@@ -1,4 +1,4 @@
-// import Link from "next/link";
+import Link from "next/link";
 import "./style.css";
 import AssignmentsControls from "./AssignmentsControls";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
@@ -54,7 +54,7 @@ export default function Assignments() {
               <div className="d-flex align-items-center">
                 <AssignmentIcon />
                   <div className="flex-grow-1">
-                    <div><strong>A1</strong></div>
+                    <div><Link href="/Courses/1234/Assignments/123" className="wd-assignment-link"><strong>A1</strong></Link></div>
                     <div>
                       <span className="text-danger">Multiple Modules</span>
                       <span className="text-muted"> | <strong>Not available until</strong> May 6 at 12:00am |</span>
@@ -70,7 +70,7 @@ export default function Assignments() {
               <div className="d-flex align-items-center">
                 <AssignmentIcon />
                   <div className="flex-grow-1">
-                    <div><strong>A2</strong></div>
+                    <div><Link href="/Courses/1234/Assignments/123" className="wd-assignment-link"><strong>A2</strong></Link></div>
                     <div>
                       <span className="text-danger">Multiple Modules</span>
                       <span className="text-muted"> | <strong>Not available until</strong> May 13 at 12:00am |</span>
@@ -85,7 +85,7 @@ export default function Assignments() {
               <div className="d-flex align-items-center">
                 <AssignmentIcon />
                   <div className="flex-grow-1">
-                    <div><strong>A3</strong></div>
+                    <div><Link href="/Courses/1234/Assignments/123" className="wd-assignment-link"><strong>A3</strong></Link></div>
                     <div>
                       <span className="text-danger">Multiple Modules</span>
                       <span className="text-muted"> | <strong>Not available until</strong> May 20 at 12:00am |</span>
