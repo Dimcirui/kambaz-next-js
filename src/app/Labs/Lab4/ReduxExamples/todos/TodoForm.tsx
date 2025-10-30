@@ -1,3 +1,4 @@
+"use client";
 import { ListGroupItem, Button } from "react-bootstrap";
 import { FormControl } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
