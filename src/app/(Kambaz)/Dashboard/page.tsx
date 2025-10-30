@@ -129,7 +129,7 @@ export default function Dashboard() {
                           </React.Fragment>
                         )}
 
-                        {currentUser && currentUser.role === "STUDENT" && (
+                        {currentUser && currentUser.role === "STUDENT" && showAllCourses && (
                           <React.Fragment>
                             {isEnrolled ? (
                               <Button
