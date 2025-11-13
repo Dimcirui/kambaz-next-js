@@ -26,7 +26,7 @@ export default function Dashboard() {
   });
   const fetchCourses = async () => {
     try {
-      const courses = await client.findMyCourses();
+      const courses = await client.fetchAllCourses();
       dispatch(setCourses(courses));
     } catch (error) {
       console.error(error);
