@@ -33,14 +33,9 @@ export default function Signup() {
   const [user, setUser] = useState<any>({});
   const dispatch = useDispatch();
   const signup = async () => {
-    try {
       const currentUser = await client.signup(user);
       dispatch(setCurrentUser(currentUser));
       redirect("/Account/Profile");
-    } catch (e) {
-      console.error(e);
-      alert("Username is already taken");
-    }
   };
   return (
     <div className="wd-signup-screen">
