@@ -10,14 +10,16 @@ export default function Home() {
   const router = useRouter();
 
   const { enrolledCourses } = useSelector((state: any) => state.enrollmentsReducer);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
 
   const isEnrolled = enrolledCourses.includes(cid as string);
+  const isFaculty = currentUser?.role === "FACULTY";
 
   useEffect(() => {
-    if (!isEnrolled) {
-      router.push("/(Kambaz)/Courses");
+    if (!isEnrolled && !isFaculty) {
+      router.push("/Courses");
     }
-  }, [isEnrolled, router]);
+  }, [isEnrolled, isFaculty, router]);
 
   return (
     <div id="wd-home">

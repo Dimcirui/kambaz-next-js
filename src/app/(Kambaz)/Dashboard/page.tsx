@@ -1,18 +1,20 @@
 "use client"
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addNewCourse, deleteCourse, updateCourse } from "../Courses/reducer";
+// import { addNewCourse, deleteCourse, updateCourse } from "../Courses/reducer";
+import { addNewCourse, deleteCourse, updateCourse, setCourses } from "../Courses/reducer";
 import { setEnrollments, enrollCourse, unenrollCourse } from "./reducer";
 
 import { FormControl } from "react-bootstrap";
 import React from "react";
 import Link from "next/link";
-import * as db from "../Database";
+// import * as db from "../Database";
+import * as client from "../Courses/client";
 import { Card, CardBody, CardImg, CardText, CardTitle, Button, Row, Col } from "react-bootstrap";
 
 export default function Dashboard() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const { enrollments } = db;
+  // const { enrollments } = db;
 
   const { courses } = useSelector((state: any) => state.coursesReducer);
   const { enrolledCourses } = useSelector((state: any) => state.enrollmentsReducer);
@@ -22,20 +24,75 @@ export default function Dashboard() {
     startDate: "2023-09-10", endDate: "2023-12-15",
     image: "/images/reactjs.jpg", description: "New Description"
   });
+  const fetchCourses = async () => {
+    try {
+      const courses = await client.findMyCourses();
+      dispatch(setCourses(courses));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const onAddNewCourse = async () => {
+    const newCourse = await client.createCourse(course);
+    dispatch(addNewCourse(newCourse));
+  };
+  const onDeleteCourse = async (courseId: string) => {
+    await client.deleteCourse(courseId);
+    dispatch(deleteCourse(courseId));
+  };
+    const onUpdateCourse = async () => {
+    await client.updateCourse(course);
+    dispatch(updateCourse(course));
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, [currentUser]);
+
 
   const [showAllCourses, setShowAllCourses] = useState(false);
 
-  useEffect(() => {
-    if (currentUser) {
-      const userEnrollments = db.enrollments
-        .filter((e: any) => e.user === currentUser._id)
-        .map((e: any) => e.course);
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     const userEnrollments = db.enrollments
+  //       .filter((e: any) => e.user === currentUser._id)
+  //       .map((e: any) => e.course);
 
-      dispatch(setEnrollments(userEnrollments));
+  //     dispatch(setEnrollments(userEnrollments));
+  //   } else {
+  //     dispatch(setEnrollments([]));
+  //   }
+  // }, [currentUser, dispatch]);
+  useEffect(() => {
+    const fetchUserEnrollments = async () => {
+      try {
+        const enrollments = await client.findMyEnrollments();
+        
+        const courseIds = enrollments.map((e: any) => e.course);
+        
+        dispatch(setEnrollments(courseIds));
+      } catch (error) {
+        console.error("Failed to fetch enrollments:", error);
+        dispatch(setEnrollments([]));
+      }
+    };
+
+  if (currentUser) {
+      fetchUserEnrollments();
     } else {
       dispatch(setEnrollments([]));
     }
   }, [currentUser, dispatch]);
+
+  const handleEnroll = async (courseId: string) => {
+    await client.enrollInCourse(courseId); 
+    dispatch(enrollCourse(courseId));
+  };
+
+  const handleUnenroll = async (courseId: string) => {
+    await client.unenrollFromCourse(courseId); 
+    dispatch(unenrollCourse(courseId));
+  };
 
   const visibleCourses = showAllCourses ? courses : courses.filter((c: any) => enrolledCourses.includes(c._id));
 
@@ -57,11 +114,13 @@ export default function Dashboard() {
           <h5>New Course
             <Button className="btn btn-primary float-end"
                     id="wd-add-new-course-click"
-                    onClick={() => dispatch(addNewCourse(course))} >
+                    // onClick={() => dispatch(addNewCourse(course))} >
+                    onClick={onAddNewCourse} >
                 Add
             </Button>
-            <Button className="btn btn-warning float-end me-2"
-                    onClick={() => dispatch(updateCourse(course))} id="wd-update-course-click">
+            {/* <Button className="btn btn-warning float-end me-2"
+                    onClick={() => dispatch(updateCourse(course))} id="wd-update-course-click"> */}
+            <Button onClick={onUpdateCourse} className="btn btn-secondary float-end" id="wd-update-course-click" >
                 Update
             </Button>
 
@@ -113,7 +172,8 @@ export default function Dashboard() {
                           <React.Fragment>
                             <Button onClick={(event) => {
                               event.preventDefault();
-                              dispatch(deleteCourse(course._id));
+                              // dispatch(deleteCourse(course._id));
+                              onDeleteCourse(course._id);
                             }} className="btn btn-danger float-end"
                             id="wd-delete-course-click">
                               Delete
@@ -138,7 +198,8 @@ export default function Dashboard() {
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  dispatch(unenrollCourse(course._id));
+                                  // dispatch(unenrollCourse(course._id));
+                                  handleUnenroll(course._id);
                                 }}
                               >
                                 Unenroll
@@ -150,7 +211,8 @@ export default function Dashboard() {
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  dispatch(enrollCourse(course._id));
+                                  // dispatch(enrollCourse(course._id));
+                                  handleEnroll(course._id);
                                 }}
                               >
                                 Enroll

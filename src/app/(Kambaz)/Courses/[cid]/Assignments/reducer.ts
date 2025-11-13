@@ -1,25 +1,29 @@
+import { add } from "@/app/Labs/Lab3/Math";
 import { createSlice } from "@reduxjs/toolkit";
-import { assignments } from "../../../Database";
-import { v4 as uuidv4 } from "uuid";
+// import { assignments } from "../../../Database";
+// import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
-  assignments: assignments,
+  assignments: [],
 };
 
 const assignmentsSlice = createSlice({
   name: "assignments",
   initialState,
   reducers: {
+    // addAssignment: (state, { payload: assignment }) => {
+    //   const newAssignment = {
+    //     _id: uuidv4(),
+    //     title: assignment.title,
+    //     course: assignment.course,
+    //     available: assignment.available,
+    //     due: assignment.due,
+    //     points: assignment.points,
+    //   };
+    //   state.assignments = [...state.assignments, newAssignment] as any;
+    // },
     addAssignment: (state, { payload: assignment }) => {
-      const newAssignment = {
-        _id: uuidv4(),
-        title: assignment.title,
-        course: assignment.course,
-        available: assignment.available,
-        due: assignment.due,
-        points: assignment.points,
-      };
-      state.assignments = [...state.assignments, newAssignment] as any;
+      state.assignments = [...state.assignments, assignment] as any;
     },
 
     deleteAssignment: (state, { payload: assignmentId }) => {

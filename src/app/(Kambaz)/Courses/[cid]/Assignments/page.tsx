@@ -1,8 +1,8 @@
 "use client"
 import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { addAssignment, deleteAssignment, updateAssignment }
+import { addAssignment, deleteAssignment, setAssignments, updateAssignment }
   from "./reducer";
 
 import Link from "next/link";
@@ -17,11 +17,28 @@ import { FaTrash } from "react-icons/fa";
 import { IoEllipsisVertical } from "react-icons/io5";
 import AssignmentIcon from "./AssignmentIcon";
 
+import * as client from "../../client";
+
 export default function Assignments() {
   const { cid } = useParams();
   const dispatch = useDispatch();
   const { assignments } = useSelector((state: any) => state.assignmentsReducer);
 
+  
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      if (!cid) return;
+      const assignments = await client.findAssignmentsForCourse(cid);
+      dispatch(setAssignments(assignments));
+    };
+    fetchAssignments();
+  }, [cid, dispatch]);
+
+  const handleDeleteAssignment = async (assignmentId: string) => {
+    await client.deleteAssignment(assignmentId);
+    dispatch(deleteAssignment(assignmentId));
+  };
+  
   const courseAssignments = assignments.filter(
     (assignment: any) => assignment.course === cid
   );
@@ -63,7 +80,8 @@ export default function Assignments() {
                   <div className="float-end ms-2 d-flex align-items-center">
                     <FaTrash
                       className="text-danger me-2 mb-1"
-                      onClick={() => dispatch(deleteAssignment(assignment._id))}
+                      // onClick={() => dispatch(deleteAssignment(assignment._id))}
+                      onClick={() => handleDeleteAssignment(assignment._id)}
                     />
                     <IoEllipsisVertical className="fs-4" />
                   </div>

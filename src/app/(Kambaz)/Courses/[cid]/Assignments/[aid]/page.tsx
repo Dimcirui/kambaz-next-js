@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { addAssignment, updateAssignment } from "../reducer";
 import { useState, useEffect } from "react";
+import * as client from "../../../client";
 
 
 export default function AssignmentEditor() {
@@ -68,11 +69,22 @@ export default function AssignmentEditor() {
     });
   };
 
-  const handleSave = () => {
+  // const handleSave = () => {
+  //   if (aid === "new") {
+  //     dispatch(addAssignment(currentAssignment));
+  //   } else {
+  //     dispatch(updateAssignment(currentAssignment));
+  //   }
+  //   router.push(`/Courses/${cid}/Assignments`);
+  // };
+
+  const handleSave = async () => {
     if (aid === "new") {
-      dispatch(addAssignment(currentAssignment));
+      const newAssignment = await client.createAssignment(cid, currentAssignment);
+      dispatch(addAssignment(newAssignment));
     } else {
-      dispatch(updateAssignment(currentAssignment));
+      const updatedAssignment = await client.updateAssignment(currentAssignment);
+      dispatch(updateAssignment(updatedAssignment));
     }
     router.push(`/Courses/${cid}/Assignments`);
   };

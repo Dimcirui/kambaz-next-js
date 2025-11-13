@@ -6,6 +6,7 @@ import accountReducer from "./Account/reducer";
 import uiReducer from "./Courses/[cid]/reducer";
 import assignmentsReducer from "./Courses/[cid]/Assignments/reducer";
 import enrollmentsReducer from "./Dashboard/reducer";
+import peopleReducer from "./Courses/[cid]/People/reducer";
 
 const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const store = configureStore({
     uiReducer,
     assignmentsReducer,
     enrollmentsReducer,
+    peopleReducer,
   },
 });
 export default store;
