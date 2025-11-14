@@ -2,7 +2,7 @@
 
 > **Note**: This repository contains coursework in progress. The `main` branch shows the initial implementation. For the latest features and updates, see branch `a3`.
 >
-> 📌 **Latest Version**: [View a4 branch](https://github.com/Dimcirui/kambaz-next-js/tree/a4)
+> 📌 **Latest Version**: [View a5 branch](https://github.com/Dimcirui/kambaz-next-js/tree/a5)
 
 A full-stack course management web application built with Next.js, TypeScript, and React. This project implements a Canvas-like learning management system with module organization, assignment tracking, and course content delivery.
 
