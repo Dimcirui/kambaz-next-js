@@ -1,6 +1,6 @@
 # Kambaz - Course Management System
 
-> **Note**: This repository contains coursework in progress. The `main` branch shows the initial implementation. For the latest features and updates, see branch `a3`.
+> **Note**: This repository contains coursework in progress. The `main` branch shows the initial implementation. For the latest features and updates, see branch `a5`.
 >
 > 📌 **Latest Version**: [View a5 branch](https://github.com/Dimcirui/kambaz-next-js/tree/a5)
 
