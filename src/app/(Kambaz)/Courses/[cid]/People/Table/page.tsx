@@ -44,16 +44,6 @@ export default function PeopleTable() {
         fetchAllData();
     }, [cid, dispatch]);
 
-    // useEffect(() => {
-    //     const fetchUsersInCourse = async () => {
-    //         if (cid) {
-    //             const users = await client.findUsersInCourse(cid);
-    //             dispatch(setUsers(users));
-    //         }
-    //     };
-    //     fetchUsersInCourse();
-    // }, [cid, dispatch]);
-
     const handleEnroll = async () => {
         if (cid && selectedUserId) {
             await client.facultyEnrollUser(cid as string, selectedUserId);
