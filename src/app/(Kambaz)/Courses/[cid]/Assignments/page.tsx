@@ -58,7 +58,7 @@ export default function Assignments() {
 
         <ListGroup className="wd-lessons rounded-0">
           {courseAssignments.map((assignment: any) => (
-            <ListGroupItem key={assignment.id} className="wd-lesson p-3 ps-1">
+            <ListGroupItem key={assignment._id} className="wd-lesson p-3 ps-1">
               <div className="d-flex align-items-center">
                 <AssignmentIcon />
                   <div className="flex-grow-1">

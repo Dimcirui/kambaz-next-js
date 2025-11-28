@@ -16,10 +16,18 @@ export default function Home() {
   const isFaculty = currentUser?.role === "FACULTY";
 
   useEffect(() => {
-    if (!isEnrolled && !isFaculty) {
-      router.push("/Courses");
+    if (!currentUser) {
+      router.push("/Account/Signin");
+      return;
     }
-  }, [isEnrolled, isFaculty, router]);
+
+    const isEnrolled = enrolledCourses.includes(cid as string);
+    const isFaculty = currentUser.role === "FACULTY";
+
+    if (!isEnrolled && !isFaculty) {
+      router.push("/Dashboard"); 
+    }
+  }, [cid, enrolledCourses, currentUser, router]);
 
   return (
     <div id="wd-home">
