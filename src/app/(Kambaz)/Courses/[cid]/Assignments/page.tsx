@@ -85,14 +85,15 @@ export default function Assignments() {
                     </div>
                   </div>
 
-                  <div className="float-end ms-2 d-flex align-items-center">
-                    <FaTrash
-                      className="text-danger me-2 mb-1"
-                      // onClick={() => dispatch(deleteAssignment(assignment._id))}
-                      onClick={() => handleDeleteAssignment(assignment._id)}
-                    />
-                    <IoEllipsisVertical className="fs-4" />
-                  </div>
+                  {isFacultyOrAdmin && (
+                    <div className="float-end ms-2 d-flex align-items-center">
+                      <FaTrash
+                        className="text-danger me-2 mb-1"
+                        onClick={() => handleDeleteAssignment(assignment._id)}
+                      />
+                      <IoEllipsisVertical className="fs-4" />
+                    </div>
+                  )}
 
               </div>
             </ListGroupItem>
