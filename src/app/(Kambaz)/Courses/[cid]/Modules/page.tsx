@@ -20,7 +20,8 @@ export default function Modules() {
   const dispatch = useDispatch();
   const onUpdateModule = async (module: any) => {
     dispatch(updateModule({ ...module, editing: false }));
-    await client.updateModule(cid as string, module);
+    const { editing, ...moduleToSave } = module;
+    await client.updateModule(cid as string, moduleToSave);
   };
 
   const onRemoveModule = async (moduleId: string) => {
