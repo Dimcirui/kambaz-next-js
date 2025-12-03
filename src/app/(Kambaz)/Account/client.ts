@@ -46,7 +46,9 @@ export const signup = async (user: any) => {
   return response.data;
 };
 export const profile = async () => {
-  const response = await axiosWithCredentials.get(`${USERS_API}/profile`); // should be .get because we are retrieving data
+  const response = await axiosWithCredentials.get(
+    `${USERS_API}/profile?t=${Date.now()}`
+  );
   return response.data;
 };
 export const signout = async () => {
