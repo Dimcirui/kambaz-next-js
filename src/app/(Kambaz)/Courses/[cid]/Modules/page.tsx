@@ -65,6 +65,7 @@ export default function Modules() {
                     {!module.editing && module.name}
                     { module.editing && (
                       <FormControl className="w-50 d-inline-block"
+                        value={module.name}
                         onChange={(e) =>
                           dispatch(
                             updateModule({ ...module, name: e.target.value })
@@ -75,7 +76,9 @@ export default function Modules() {
                             onUpdateModule({ ...module, editing: false });
                           }
                         }}
-                        defaultValue={module.name} />
+                        onBlur={() => {
+                          onUpdateModule({ ...module, editing: false });
+                        }} />
                     )}
                 </span>
                 
