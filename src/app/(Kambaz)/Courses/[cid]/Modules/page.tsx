@@ -19,9 +19,8 @@ export default function Modules() {
   const { modules } = useSelector((state: any) => state.modulesReducer);
   const dispatch = useDispatch();
   const onUpdateModule = async (module: any) => {
+    dispatch(updateModule({ ...module, editing: false }));
     await client.updateModule(cid as string, module);
-    const newModules = modules.map((m: any) => m._id === module._id ? module : m );
-    dispatch(setModules(newModules));
   };
 
   const onRemoveModule = async (moduleId: string) => {
@@ -67,18 +66,17 @@ export default function Modules() {
                       <FormControl className="w-50 d-inline-block"
                         value={module.name}
                         onChange={(e) =>
-                          dispatch(
-                            updateModule({ ...module, name: e.target.value })
-                          )
+                          dispatch(updateModule({ ...module, name: e.target.value }))
                         }
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
-                            onUpdateModule({ ...module, editing: false });
+                            e.preventDefault();
+                            onUpdateModule(module);
                           }
                         }}
-                        onBlur={() => {
-                          onUpdateModule({ ...module, editing: false });
-                        }} />
+                        onBlur={() => {onUpdateModule(module);}}
+                        autoFocus
+                      />
                     )}
                 </span>
                 
