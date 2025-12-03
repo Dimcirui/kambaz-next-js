@@ -109,7 +109,7 @@ export default function Dashboard() {
         {showAllCourses ? "Show Enrolled Courses" : "Enrollments"}
       </Button>
 
-      {currentUser && currentUser.role === "FACULTY" && (
+      {currentUser && (currentUser.role === "FACULTY" || currentUser.role === "ADMIN") && (
         <div id="wd-dashboard-editor">
           <h5>New Course
             <Button className="btn btn-primary float-end"
@@ -168,7 +168,7 @@ export default function Dashboard() {
                           {course.description}</CardText>
                         <Button variant="primary">Go</Button>
 
-                        {currentUser && currentUser.role === "FACULTY" && (
+                        {currentUser && (currentUser.role === "FACULTY" || currentUser.role === "ADMIN") && (
                           <React.Fragment>
                             <Button onClick={(event) => {
                               event.preventDefault();

@@ -25,6 +25,10 @@ export default function Profile() {
     dispatch(setCurrentUser(null));
     redirect("/Account/Signin");
   };
+  const formatDate = (date: string | Date | undefined) => {
+    if (!date) return "";
+    return new Date(date).toISOString().split("T")[0];
+  };
  useEffect(() => {
    fetchProfile();
  }, []);
@@ -49,12 +53,12 @@ export default function Profile() {
            defaultValue={profile.lastName}
            onChange={(e) => setProfile({ ...profile, lastName: e.target.value }) } />
          <FormControl id="wd-dob" className="mb-2" type="date"
-           defaultValue={profile.dob}
+           value={formatDate(profile.dob)}
            onChange={(e) => setProfile({ ...profile, dob: e.target.value })} />
          <FormControl id="wd-email" className="mb-2"
            defaultValue={profile.email}
            onChange={(e) => setProfile({ ...profile, email: e.target.value })} />
-         <select className="form-control mb-2" id="wd-role" 
+         <select className="form-control mb-2" id="wd-role" value={profile.role || "USER"}
            onChange={(e) => setProfile({ ...profile, role: e.target.value })} >
            <option value="USER">User</option>
            <option value="ADMIN">Admin</option>
