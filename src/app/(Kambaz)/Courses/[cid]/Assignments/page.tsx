@@ -24,6 +24,9 @@ export default function Assignments() {
   const dispatch = useDispatch();
   const { assignments } = useSelector((state: any) => state.assignmentsReducer);
 
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const isFacultyOrAdmin = currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
+
   
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -45,7 +48,7 @@ export default function Assignments() {
 
   return (
     <div id="wd-assignments">
-      <AssignmentsControls />
+      {isFacultyOrAdmin && <AssignmentsControls />}
 
       <ListGroup className="rounded-0" id="wd-assignments">
         <ListGroupItem className="wd-assignment-list-item p-0 mb-5 fs-5 border-gray">
@@ -63,10 +66,15 @@ export default function Assignments() {
                 <AssignmentIcon />
                   <div className="flex-grow-1">
                     <div>
-                      <Link 
-                        href={`/Courses/${cid}/Assignments/${assignment._id}`} 
-                        className="wd-assignment-link"><strong>{assignment.title}</strong>
-                      </Link>
+                      {isFacultyOrAdmin ? (
+                        <Link 
+                          href={`/Courses/${cid}/Assignments/${assignment._id}`} 
+                          className="wd-assignment-link">
+                          <strong>{assignment.title}</strong>
+                        </Link>
+                        ) : (
+                          <strong>{assignment.title}</strong>
+                        )}
                       </div>
                     <div>
                       <span className="text-danger">Multiple Modules</span>

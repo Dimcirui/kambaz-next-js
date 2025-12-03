@@ -17,6 +17,10 @@ export default function Modules() {
   const { cid } = useParams();
   const [moduleName, setModuleName] = useState("");
   const { modules } = useSelector((state: any) => state.modulesReducer);
+
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const isFacultyOrAdmin = currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
+
   const dispatch = useDispatch();
   const onUpdateModule = async (module: any) => {
     dispatch(updateModule({ ...module, editing: false }));
@@ -47,10 +51,12 @@ export default function Modules() {
 
   return (
     <div className="wd-modules d-flex flex-column">
-      <div className="mb-3">
-      <ModulesControls moduleName={moduleName} setModuleName={setModuleName}
-        addModule={onCreateModuleForCourse} />
-      </div>
+      {isFacultyOrAdmin && (
+        <div className="mb-3">
+        <ModulesControls moduleName={moduleName} setModuleName={setModuleName}
+          addModule={onCreateModuleForCourse} />
+        </div>
+      )}
 
       <div>
       <ListGroup className="rounded-0" id="wd-modules">
@@ -81,9 +87,11 @@ export default function Modules() {
                     )}
                 </span>
                 
-                <ModuleControlButtons moduleId={module._id}
-                          deleteModule={(moduleId) => onRemoveModule(moduleId)}
-                          editModule={(moduleId) => dispatch(editModule(moduleId))} />
+                {isFacultyOrAdmin && (
+                  <ModuleControlButtons moduleId={module._id}
+                            deleteModule={(moduleId) => onRemoveModule(moduleId)}
+                            editModule={(moduleId) => dispatch(editModule(moduleId))} />
+                )}
 
               </div>
 
