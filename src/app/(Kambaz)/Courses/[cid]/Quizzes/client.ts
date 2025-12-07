@@ -9,17 +9,32 @@ export interface Quiz {
     title: string;
     course: string;
     description?: string;
+    quizType?: string;
+    assignmentGroup?: string;
+    shuffleAnswers?: boolean;
+    timeLimit?: number;
+    multipleAttempts?: boolean;
+    showCorrectAnswers?: boolean;
+    accessCode?: string;
+    lockQuestionsAfterAnswering?: boolean;
     points: number;
     due?: string;
     availableDate?: string;
+    untilDate?: string;
     published: boolean;
     questionsCount?: number;
+    howManyAttempts?: number;
 }
 
 export const findQuizzesForCourse = async (courseId: string) => {
     const response = await axios.get(`${COURSES_API}/${courseId}/quizzes`);
     return response.data;
 };
+
+export const findQuizById = async (quizId: string) => {
+    const response = await axios.get(`${QUIZZES_API}/${quizId}`);
+    return response.data;
+}
 
 export const createQuiz = async (courseId: string, quiz: Quiz) => {
     const response = await axios.post(`${COURSES_API}/${courseId}/quizzes`, quiz);

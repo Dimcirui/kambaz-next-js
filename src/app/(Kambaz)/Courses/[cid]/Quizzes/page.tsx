@@ -5,6 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import { FaBan, FaCheckCircle, FaEllipsisV, FaPlus, FaRocket } from "react-icons/fa";
 import * as client from "./client";
 import Link from "next/link";
+import { Button, Dropdown, ListGroup } from "react-bootstrap";
+import { IoEllipsisVertical } from "react-icons/io5";
+import { BsRocketFill } from "react-icons/bs";
 
 export default function Quizzes() {
     const { cid } = useParams();
@@ -13,8 +16,13 @@ export default function Quizzes() {
 
     const fetchQuizzes = async () => {
         if (cid) {
-            const data = await client.findQuizzesForCourse(cid as string);
-            setQuizzes(data);
+            try {
+                const data = await client.findQuizzesForCourse(cid as string);
+                setQuizzes(data);
+            } catch (error) {
+                console.error("Error fetching quizzes:", error);
+                setQuizzes([]);
+            }
         }
     };
 
@@ -65,101 +73,114 @@ export default function Quizzes() {
 
     return (
         <div id="wd-quizzes">
-            <div className="flex justify-between items-center mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-3">
                 <input
                     placeholder="Search for Quiz"
-                    className="p-2 border rounded"
+                    className="form-control w-50"
                     id="wd-search-quiz"
                 />
 
                 <div>
-                    <button
-                        id="wd-add-quiz"
+                    <Button
+                        variant="danger"
+                        size="lg"
+                        id="wd-add-quiz-btn"
                         onClick={handleAddQuiz}
-                        className="bg-red-600 textwhite px-4 py-2 rounded hover:bg-red-700 mr-2"
+                        className="me-1"
                     >
-                        <FaPlus className="inline mr-1" /> Quiz
-                    </button>
-                    <button className="bg-gray-200 p-2 rounded hover:bg-gray-300">
-                        <FaEllipsisV />
-                    </button>
+                        <FaPlus className="position-relative me-2" style={{ bottom: "1px" }} /> Quiz
+                    </Button>
+                    <Button variant="secondary" size="lg" className="me-1">
+                        <IoEllipsisVertical className="fs-4" />
+                    </Button>
                 </div>
             </div>
+
+
+            {/* Header */}
+            <div id="wd-quiz-list-title" className="bg-light p-2 border-top border-bottom fw-bold text-secondary d-flex align-items-center">
+                <span className="me-2" style={{ fontSize: "0.8rem" }}>▼</span> Assignment Quizzes
+            </div>  
 
             {/* Quiz List Section */}
-            <div className="mt-4">
-                <div className="bg-gray-100 p-3 font-bold flex justify-between items-center">
-                    <span className="flex items-center">
-                        <span className="mr-2">▼</span> Assignment Quizzes
-                    </span>
-                </div>
+            <ListGroup className="rounded-0" id="wd-quiz-list">
+                {quizzes.length === 0 && (
+                    <div className="text-center p-5 text-secondary">
+                        No quizzes available. Click &quot;+ Quiz&quot; to create one.
+                    </div>
+                )}
 
-                <ul id="wd-quiz-list" className="border-l border-r">
-                    {quizzes.length === 0 && (
-                        <div className="p-8 text-center text-gray-500">
-                            No quizzes available. Click &quot;+ Quiz&quot; to create one.
+                {Array.isArray(quizzes) && quizzes.map((quiz) => (
+                    <ListGroup.Item
+                        key={quiz._id}
+                        className="p-3 ps-2 d-flex align-items-center"
+                        style={{ borderLeft: "4px solid green" }}
+                    >
+                        
+                        <div className="me-4 text-success fs-3">
+                            <BsRocketFill />
                         </div>
-                    )}
-                    {quizzes.map((quiz) => (
-                        <li key={quiz._id} className="wd-quiz-list-item flex items-center p-4 border-b hover:bg-gray-50">
-                            <div className="text-green-600 text-2xl mr-4">
-                                <FaRocket />
-                            </div>
 
-                            {/* Main Content */}
-                            <div className="flex-grow">
-                                <Link
-                                    href={`/Courses/${cid}/Quizzes/${quiz._id}`}
-                                    className="font-bold text-gray-800 hover:text-blue-600 text-lg no-underline"
+                        {/* Main Content */}
+                        <div className="flex-grow-1">
+                            <Link
+                                href={`/Courses/${cid}/Quizzes/${quiz._id}`}
+                                className="fw-bold text-dark text-decoration-none fs-5"
+                                id="wd-quiz-link"
+                            >
+                                {quiz.title}
+                            </Link>
+                            <div className="text-nowrap">
+                                <span className="fw-bold text-dark">
+                                    {getStatusText(quiz)}
+                                </span>{" "}
+                                &nbsp; | &nbsp;
+                                <span className="text-muted">Due</span> {formatDate(quiz.due)}{" "}
+                                &nbsp; | &nbsp; {quiz.points} pts &nbsp; | &nbsp;
+                                {quiz.questionsCount || 0} Questions
+                            </div>
+                        </div>
+
+                        {/* Right Side Bar*/}
+                        <div className="flex items-center space-x-4">
+                            <span onClick={() => handleTogglePublish(quiz)} className="me-3 fs-4">
+                                {quiz.published ? (
+                                    <FaCheckCircle className="text-success" />
+                                ) : (
+                                    <FaBan className="text-danger" />
+                                )}
+                            </span>
+
+                            <Dropdown className="d-inline" align="end">
+                                <Dropdown.Toggle
+                                    as="div"
+                                    bsPrefix="custom-toggle"
+                                    className="d-inline-block"
+                                    style={{ cursor: "pointer" }}
                                 >
-                                    {quiz.title}
-                                </Link>
-                                <div className="text-sm text-gray-600 mt-1">
-                                    <span className="font-semibold">{getStatusText(quiz)}</span> | &nbsp;
-                                    <span className="font-bold">Due</span> {formatDate(quiz.due)} | &nbsp;
-                                    {quiz.points} pts | &nbsp;
-                                    {quiz.questionsCount || 0} Questions
-                                </div>
-                            </div>
+                                    <IoEllipsisVertical className="fs-4 text-secondary" />
+                                </Dropdown.Toggle>
 
-                            {/* Right Side Bar*/}
-                            <div className="flex items-center space-x-4">
-                                <button onClick={() => handleTogglePublish(quiz)} className="text-2xl">
-                                    {quiz.published ? (
-                                        <FaCheckCircle className="text-green-600" />
-                                    ) : (
-                                        <FaBan className="text-gray-400" />
-                                    )}
-                                </button>
-
-                                <div className="relative group">
-                                    <button className="text-gray-600 hover:bg-gray-200 p-2 rounded">
-                                        <FaEllipsisV />
-                                    </button>
-
-                                    <div className="absolute right-0 top-8 bg-white border shadow-lg rounded hidden group-hover:block z-10 w-32">
-                                        <Link href={`/Courses/${cid}/Quizzes/${quiz._id}`} className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700 no-underline">
-                                            Edit
-                                        </Link>
-                                        <button 
-                                            onClick={() => handleDeleteQuiz(quiz._id!)} 
-                                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-600"
-                                        >
-                                            Delete
-                                        </button>
-                                        <button 
-                                            onClick={() => handleTogglePublish(quiz)} 
-                                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
-                                        >
-                                            {quiz.published ? "Unpublish" : "Publish"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item href={`/Courses/${cid}/Quizzes/${quiz._id}`} className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700 no-underline">
+                                        Edit
+                                    </Dropdown.Item>
+                                    <Dropdown.Item 
+                                        onClick={() => handleTogglePublish(quiz)} 
+                                    >
+                                        {quiz.published ? "Unpublish" : "Publish"}
+                                    </Dropdown.Item>
+                                    <Dropdown.Item 
+                                        onClick={() => handleDeleteQuiz(quiz._id!)} 
+                                    >
+                                        Delete
+                                    </Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </div>
+                    </ListGroup.Item>
+                ))}
+            </ListGroup>
         </div>
     );
 }
