@@ -38,6 +38,24 @@ export default function QuizDetails() {
     if (!quiz) return <div>Loading quiz details...</div>;
 
     return (
+        <div className="p-3">
+            <Row className="mb-3">
+            <Col>
+                <h2>{quiz?.title}</h2>
+            </Col>
+            <Col className="text-end">
+                <Button
+                variant="secondary"
+                onClick={() =>
+                    router.push(`/Courses/${cid}/Quizzes/${qid}/Editor`)
+                }
+                >
+                <FaPencil className="me-2" />
+                Edit
+                </Button>
+            </Col>
+            </Row>
+        
         <div id="wd-quiz-details" className="p-4">
             <div className="d-flex align-items-center justify-content-end mb-3">
                 <Button 
@@ -125,5 +143,6 @@ export default function QuizDetails() {
                 </tbody>
             </Table>
         </div>
+    </div>
     );
 }
