@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { FormControl } from "react-bootstrap";
 
-const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER_A6;
+const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 
 export default function WorkingWithObjects() {
     const [assignment, setAssignment] = useState({
