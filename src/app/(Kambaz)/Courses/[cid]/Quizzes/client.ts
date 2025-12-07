@@ -24,6 +24,8 @@ export interface Quiz {
     published: boolean;
     questionsCount?: number;
     howManyAttempts?: number;
+    oneQuestionAtATime?: boolean;
+    webcamRequired?: boolean;
 }
 
 export const findQuizzesForCourse = async (courseId: string) => {

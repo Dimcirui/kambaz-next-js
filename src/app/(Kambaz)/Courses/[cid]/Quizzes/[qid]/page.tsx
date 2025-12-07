@@ -101,6 +101,14 @@ export default function QuizDetails() {
                     <Col md={9}>{quiz.accessCode || "None"}</Col>
                 </Row>
                 <Row className="mb-2">
+                    <Col md={3} className="text-end fw-bold text-secondary">One Question at a Time</Col>
+                    <Col md={9}>{quiz.oneQuestionAtATime ? "Yes" : "No"}</Col>
+                </Row>
+                <Row className="mb-2">
+                    <Col md={3} className="text-end fw-bold text-secondary">Webcam Required</Col>
+                    <Col md={9}>{quiz.webcamRequired ? "Yes" : "No"}</Col>
+                </Row>
+                <Row className="mb-2">
                     <Col md={3} className="text-end fw-bold text-secondary">Lock Questions After Answering</Col>
                     <Col md={9}>{quiz.lockQuestionsAfterAnswering ? "Yes" : "No"}</Col>
                 </Row>
