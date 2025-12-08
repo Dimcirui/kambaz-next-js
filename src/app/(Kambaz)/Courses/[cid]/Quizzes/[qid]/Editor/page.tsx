@@ -85,7 +85,7 @@ export default function QuizEditorPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  // 构造要发送给后端的 Quiz 对象
+  // Construct the Quiz object to send to the backend
   const buildPayload = (): client.Quiz => {
     if (!quiz) {
       throw new Error("Quiz not loaded");
@@ -108,7 +108,7 @@ export default function QuizEditorPage() {
     const payload = buildPayload();
     const updated = await client.updateQuiz(payload);
     setQuiz(updated);
-    router.push(`/Courses/${cid}/Quizzes/${qid}`); // 回详情页
+    router.push(`/Courses/${cid}/Quizzes/${qid}`); // Go back to details page
   };
 
   const handleSaveAndPublish = async () => {
@@ -117,11 +117,11 @@ export default function QuizEditorPage() {
       published: true,
     } as client.Quiz;
     await client.updateQuiz(payload);
-    router.push(`/Courses/${cid}/Quizzes`); // 回列表页
+    router.push(`/Courses/${cid}/Quizzes`); // Go back to list page 
   };
 
   const handleCancel = () => {
-    router.push(`/Courses/${cid}/Quizzes`); // 不保存回列表
+    router.push(`/Courses/${cid}/Quizzes`); // Go back to list page
   };
 
   if (loading || !quiz) {
