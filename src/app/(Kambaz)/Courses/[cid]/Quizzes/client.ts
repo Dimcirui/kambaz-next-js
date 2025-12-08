@@ -3,6 +3,7 @@ import axios from 'axios';
 const REMOTE_SERVER = process.env.NEXT_PUBLIC_REMOTE_SERVER || "http://localhost:4000";
 const COURSES_API = `${REMOTE_SERVER}/api/courses`;
 const QUIZZES_API = `${REMOTE_SERVER}/api/quizzes`;
+const QUESTIONS_API = `${REMOTE_SERVER}/api/questions`;
 
 export interface Quiz {
     _id?: string;
@@ -24,8 +25,22 @@ export interface Quiz {
     published: boolean;
     questionsCount?: number;
     howManyAttempts?: number;
+    oneQuestionAtATime?: boolean;
+    webcamRequired?: boolean;
 }
 
+export interface Question {
+    _id?: string;
+    quizId: string;
+    title: string;
+    points: number;
+    text?: string;
+    type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "FILL_IN_THE_BLANK";
+    choices?: { text: string, isCorrect: boolean }[];
+    correctAnswer?: string[];
+}
+
+// Quiz APIs
 export const findQuizzesForCourse = async (courseId: string) => {
     const response = await axios.get(`${COURSES_API}/${courseId}/quizzes`);
     return response.data;
@@ -48,5 +63,26 @@ export const updateQuiz = async (quiz: Quiz) => {
 
 export const deleteQuiz = async (quizId: string) => {
     const response = await axios.delete(`${QUIZZES_API}/${quizId}`);
+    return response.data;
+}
+
+// Question APIs
+export const findQuestionsForQuiz = async (quizId: string) => {
+    const response = await axios.get(`${QUIZZES_API}/${quizId}/questions`);
+    return response.data;
+};
+
+export const createQuestion = async (quizId: string, question: Question) => {
+    const response = await axios.post(`${QUIZZES_API}/${quizId}/questions`, question);
+    return response.data;
+}; 
+
+export const updateQuestion = async (question: Question) => {
+    const response = await axios.put(`${QUESTIONS_API}/${question._id}`, question);
+    return response.data;
+};
+
+export const deleteQuestion = async (questionId: string) => {
+    const response = await axios.delete(`${QUESTIONS_API}/${questionId}`);
     return response.data;
 }
