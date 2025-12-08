@@ -3,6 +3,7 @@ import axios from 'axios';
 const REMOTE_SERVER = process.env.NEXT_PUBLIC_REMOTE_SERVER || "http://localhost:4000";
 const COURSES_API = `${REMOTE_SERVER}/api/courses`;
 const QUIZZES_API = `${REMOTE_SERVER}/api/quizzes`;
+const QUESTIONS_API = `${REMOTE_SERVER}/api/questions`;
 
 export interface Quiz {
     _id?: string;
@@ -77,11 +78,11 @@ export const createQuestion = async (quizId: string, question: Question) => {
 }; 
 
 export const updateQuestion = async (question: Question) => {
-    const response = await axios.put(`${QUIZZES_API}/questions/${question._id}`, question);
+    const response = await axios.put(`${QUESTIONS_API}/${question._id}`, question);
     return response.data;
 };
 
 export const deleteQuestion = async (questionId: string) => {
-    const response = await axios.delete(`${QUIZZES_API}/questions/${questionId}`);
+    const response = await axios.delete(`${QUESTIONS_API}/${questionId}`);
     return response.data;
 }

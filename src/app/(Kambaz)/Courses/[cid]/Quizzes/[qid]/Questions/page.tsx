@@ -5,7 +5,8 @@ import { useParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Nav, Spinner } from "react-bootstrap";
 import * as client from "../../client";
-import { FaPlus } from "react-icons/fa6";
+import { FaPlus, FaTrash } from "react-icons/fa6";
+import QuestionEditor from "./QuestionEditor";
 
 export default function QuizQuestionsPage() {
   const params = useParams();
@@ -51,6 +52,13 @@ export default function QuizQuestionsPage() {
     const createdQuestion = await client.createQuestion(qid, newQuestion);
     await fetchQuestions();
     setEditingQuestionId(createdQuestion._id);
+  };
+
+  const handleDeleteQuestion = async (questionId: string) => {
+    const confirmed = confirm("Are you sure you want to delete this question?");
+    if (!confirmed) return;
+        await client.deleteQuestion(questionId);
+        fetchQuestions();
   };
 
   if (loading) {
@@ -124,7 +132,7 @@ export default function QuizQuestionsPage() {
                                 </div>
 
                                 <div className="text-muted text-truncate" style={{ maxWidth: "600px" }}>
-                                    {q.questionText}
+                                    {q.text}
                                 </div>
 
                                 <div className="text-end"></div>
@@ -132,9 +140,17 @@ export default function QuizQuestionsPage() {
                                     <Button
                                         variant="outline-primary"
                                         size="sm"
-                                        onClick={() => setEditingQuestionId(q._id)}
+                                        onClick={() => setEditingQuestionId(q._id!)}
                                     >
                                         <i className="bi bi-pencil-fill me-1"></i> Edit
+                                    </Button>
+
+                                    <Button
+                                        variant="outline-danger"
+                                        size="sm"
+                                        onClick={() => handleDeleteQuestion(q._id!)}
+                                    >
+                                        <FaTrash />
                                     </Button>
                                 </div>
                             </div>
