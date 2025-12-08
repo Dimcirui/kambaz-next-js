@@ -1,37 +1,49 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button, Col, Row, Spinner, Table } from "react-bootstrap";
 import { FaPencil } from "react-icons/fa6";
 import * as client from "../client";
 
-export default function QuizDetailsPage() {
-  const params = useParams();
-  const cid = params.cid as string;
-  const qid = params.qid as string;
-  const router = useRouter();
 
-  const [quiz, setQuiz] = useState<client.Quiz | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function QuizDetails() {
+    const { cid, qid } = useParams();
+    const router = useRouter();
+    const [quiz, setQuiz] = useState<client.Quiz | null>(null);
+    const [loading, setLoading] = useState(true);
 
-  const loadQuiz = async () => {
-    if (!qid) return;
-    setLoading(true);
-    try {
-      const data = await client.findQuizById(qid);
-      setQuiz(data);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchQuiz = async () => {
+        if (qid) {
+            try {
+                const data = await client.findQuizById(qid as string);
+                setQuiz(data);
+            } catch (error) {
+                console.error("Error fetching quiz details:", error);
+            }
+        }
+    };
 
-  useEffect(() => {
-    loadQuiz();
-  }, [qid]);
+    useEffect(() => {
+        fetchQuiz();
+    }, [qid]);
 
-  if (loading || !quiz) {
+    const handlePublishToggle = async () => {
+        if (!quiz) return;
+        const updatedQuiz = await client.updateQuiz({ ...quiz, published: !quiz.published });
+        await client.updateQuiz(updatedQuiz);
+        setQuiz(updatedQuiz);
+    };
+
+    if (loading || !quiz) {
+    return (
+      <div className="p-4">
+        <Spinner animation="border" size="sm" /> Loading quiz...
+      </div>
+    );
+  }
+
     return (
         <div id="wd-quiz-details" className="p-4">
             <div className="d-flex align-items-center justify-content-end mb-3">
@@ -52,6 +64,15 @@ export default function QuizDetailsPage() {
                         <FaPencil className="me-1" /> Edit
                     </Button>
                 </Link>
+
+                <Button
+                    variant="outline-secondary"
+                    onClick={() =>
+                    router.push(`/Courses/${cid}/Quizzes/${qid}/Questions`)
+                    }
+                >
+                    Questions
+                </Button>
             </div>
 
             <h1 className="mb-3">{quiz.title}</h1>
@@ -94,14 +115,6 @@ export default function QuizDetailsPage() {
                 <Row className="mb-2">
                     <Col md={3} className="text-end fw-bold text-secondary">Access Code</Col>
                     <Col md={9}>{quiz.accessCode || "None"}</Col>
-                </Row>
-                <Row className="mb-2">
-                    <Col md={3} className="text-end fw-bold text-secondary">One Question at a Time</Col>
-                    <Col md={9}>{quiz.oneQuestionAtATime ? "Yes" : "No"}</Col>
-                </Row>
-                <Row className="mb-2">
-                    <Col md={3} className="text-end fw-bold text-secondary">Webcam Required</Col>
-                    <Col md={9}>{quiz.webcamRequired ? "Yes" : "No"}</Col>
                 </Row>
                 <Row className="mb-2">
                     <Col md={3} className="text-end fw-bold text-secondary">Lock Questions After Answering</Col>
