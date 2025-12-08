@@ -1,17 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/app/(Kambaz)/Courses/[cid]/Quizzes/[qid]/Editor/page.tsx
+// path: src/app/(Kambaz)/Courses/[cid]/Quizzes/[qid]/Editor/page.tsx
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { Button, Form, Row, Col, Spinner } from "react-bootstrap";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import {
+  Button,
+  Col,
+  Row,
+  Form,
+  Spinner,
+  Nav,
+} from "react-bootstrap";
 import * as client from "../../client";
 
 type FormState = {
   title: string;
   description: string;
-  quizType: string;
-  assignmentGroup: string;
+  points: number;
   shuffleAnswers: boolean;
   timeLimitEnabled: boolean;
   timeLimitMinutes: number;
@@ -21,15 +28,20 @@ type FormState = {
 };
 
 export default function QuizEditorPage() {
-  const { cid, qid } = useParams();
+  const params = useParams();
+  const cid = params.cid as string;
+  const qid = params.qid as string;
   const router = useRouter();
+  const pathname = usePathname();
+  const activeTab = pathname?.includes("/Questions")
+    ? "questions"
+    : "details";
 
   const [quiz, setQuiz] = useState<client.Quiz | null>(null);
   const [form, setForm] = useState<FormState>({
     title: "",
     description: "",
-    quizType: "",
-    assignmentGroup: "",
+    points: 0,
     shuffleAnswers: false,
     timeLimitEnabled: false,
     timeLimitMinutes: 0,
@@ -43,23 +55,21 @@ export default function QuizEditorPage() {
     if (!qid) return;
     setLoading(true);
     try {
-      const data = await client.findQuizById(qid as string);
+      const data = await client.findQuizById(qid);
       setQuiz(data);
       setForm({
         title: data.title ?? "",
         description: data.description ?? "",
-        quizType: data.quizType ?? "",
-        assignmentGroup: data.assignmentGroup ?? "",
+        points: (data as any).points ?? 0,
         shuffleAnswers: data.shuffleAnswers ?? false,
         timeLimitEnabled: (data.timeLimit ?? 0) > 0,
         timeLimitMinutes: data.timeLimit ?? 0,
-        // 假设后端存的是 ISO 字符串，这里只取日期部分
-        due: data.due ? data.due.substring(0, 10) : "",
-        availableDate: data.availableDate
-          ? data.availableDate.substring(0, 10)
+        due: (data as any).due ? (data as any).due.substring(0, 10) : "",
+        availableDate: (data as any).availableDate
+          ? (data as any).availableDate.substring(0, 10)
           : "",
-        untilDate: data.untilDate
-          ? data.untilDate.substring(0, 10)
+        untilDate: (data as any).untilDate
+          ? (data as any).untilDate.substring(0, 10)
           : "",
       });
     } finally {
@@ -75,60 +85,80 @@ export default function QuizEditorPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  // 构造要发给后端的 Quiz 对象，保留其它字段
+  // 构造要发送给后端的 Quiz 对象
   const buildPayload = (): client.Quiz => {
     if (!quiz) {
-      // typescript 安抚一下，实际上有 quiz 才能点保存
       throw new Error("Quiz not loaded");
     }
+
     return {
       ...quiz,
       title: form.title,
       description: form.description,
-      quizType: form.quizType,
-      assignmentGroup: form.assignmentGroup,
+      points: form.points,
       shuffleAnswers: form.shuffleAnswers,
       timeLimit: form.timeLimitEnabled ? Number(form.timeLimitMinutes) : 0,
       due: form.due || undefined,
       availableDate: form.availableDate || undefined,
       untilDate: form.untilDate || undefined,
-    };
+    } as client.Quiz;
   };
 
   const handleSave = async () => {
     const payload = buildPayload();
     const updated = await client.updateQuiz(payload);
     setQuiz(updated);
-    // 保存后回到详情页
-    router.push(`/Courses/${cid}/Quizzes/${qid}`);
+    router.push(`/Courses/${cid}/Quizzes/${qid}`); // 回详情页
   };
 
   const handleSaveAndPublish = async () => {
-    const payload = buildPayload();
-    // 你们后端如果有 isPublished 字段，这里可以加上
-    (payload as any).published = true;
+    const payload = {
+      ...buildPayload(),
+      published: true,
+    } as client.Quiz;
     await client.updateQuiz(payload);
-    // 考虑再调用一个专门 publish 的 API，这里先简单处理
-    router.push(`/Courses/${cid}/Quizzes`);
+    router.push(`/Courses/${cid}/Quizzes`); // 回列表页
   };
 
   const handleCancel = () => {
-    router.push(`/Courses/${cid}/Quizzes`);
+    router.push(`/Courses/${cid}/Quizzes`); // 不保存回列表
   };
 
   if (loading || !quiz) {
     return (
-      <div className="p-3">
+      <div className="p-4">
         <Spinner animation="border" size="sm" /> Loading quiz editor...
       </div>
     );
   }
 
   return (
-    <div className="p-3">
-      <h2>Edit Quiz: {quiz.title}</h2>
+    <div className="p-4">
+      {/* Tabs：Details / Questions */}
+      <Nav variant="tabs" activeKey={activeTab} className="mb-3">
+        <Nav.Item>
+          <Nav.Link
+            as={Link}
+            href={`/Courses/${cid}/Quizzes/${qid}/Editor`}
+            eventKey="details"
+          >
+            Details
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            as={Link}
+            href={`/Courses/${cid}/Quizzes/${qid}/Questions`}
+            eventKey="questions"
+          >
+            Questions
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
 
-      <Form className="mt-3">
+      <h2 className="mb-3">Edit Quiz Details</h2>
+
+      <Form>
         <Form.Group className="mb-3" controlId="quizTitle">
           <Form.Label>Title</Form.Label>
           <Form.Control
@@ -149,32 +179,19 @@ export default function QuizEditorPage() {
         </Form.Group>
 
         <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3" controlId="quizType">
-              <Form.Label>Quiz Type</Form.Label>
+          <Col md={4}>
+            <Form.Group className="mb-3" controlId="points">
+              <Form.Label>Points</Form.Label>
               <Form.Control
-                type="text"
-                value={form.quizType}
-                onChange={(e) => handleChange("quizType", e.target.value)}
-              />
-            </Form.Group>
-          </Col>
-
-          <Col md={6}>
-            <Form.Group className="mb-3" controlId="assignmentGroup">
-              <Form.Label>Assignment Group</Form.Label>
-              <Form.Control
-                type="text"
-                value={form.assignmentGroup}
+                type="number"
+                value={form.points}
                 onChange={(e) =>
-                  handleChange("assignmentGroup", e.target.value)
+                  handleChange("points", Number(e.target.value) || 0)
                 }
               />
             </Form.Group>
           </Col>
-        </Row>
 
-        <Row>
           <Col md={4}>
             <Form.Group className="mb-3" controlId="shuffleAnswers">
               <Form.Check
@@ -189,29 +206,30 @@ export default function QuizEditorPage() {
           </Col>
 
           <Col md={4}>
-            <Form.Group className="mb-3" controlId="timeLimitEnabled">
-              <Form.Check
-                type="checkbox"
-                label="Time limit"
-                checked={form.timeLimitEnabled}
-                onChange={(e) =>
-                  handleChange("timeLimitEnabled", e.target.checked)
-                }
-              />
-            </Form.Group>
-          </Col>
-
-          <Col md={4}>
             <Form.Group className="mb-3" controlId="timeLimitMinutes">
-              <Form.Label>Time (minutes)</Form.Label>
-              <Form.Control
-                type="number"
-                value={form.timeLimitMinutes}
-                disabled={!form.timeLimitEnabled}
-                onChange={(e) =>
-                  handleChange("timeLimitMinutes", Number(e.target.value))
-                }
-              />
+              <Form.Label>Time limit</Form.Label>
+              <div className="d-flex align-items-center">
+                <Form.Check
+                  type="checkbox"
+                  className="me-2"
+                  checked={form.timeLimitEnabled}
+                  onChange={(e) =>
+                    handleChange("timeLimitEnabled", e.target.checked)
+                  }
+                />
+                <Form.Control
+                  type="number"
+                  value={form.timeLimitMinutes}
+                  disabled={!form.timeLimitEnabled}
+                  onChange={(e) =>
+                    handleChange(
+                      "timeLimitMinutes",
+                      Number(e.target.value) || 0
+                    )
+                  }
+                />
+                <span className="ms-2">minutes</span>
+              </div>
             </Form.Group>
           </Col>
         </Row>
@@ -219,7 +237,7 @@ export default function QuizEditorPage() {
         <Row>
           <Col md={4}>
             <Form.Group className="mb-3" controlId="due">
-              <Form.Label>Due</Form.Label>
+              <Form.Label>Due date</Form.Label>
               <Form.Control
                 type="date"
                 value={form.due}
@@ -247,7 +265,9 @@ export default function QuizEditorPage() {
               <Form.Control
                 type="date"
                 value={form.untilDate}
-                onChange={(e) => handleChange("untilDate", e.target.value)}
+                onChange={(e) =>
+                  handleChange("untilDate", e.target.value)
+                }
               />
             </Form.Group>
           </Col>
