@@ -1,42 +1,37 @@
-'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button, Col, Row, Table } from "react-bootstrap";
+import { useParams, useRouter } from "next/navigation";
+import { Button, Col, Row, Spinner, Table } from "react-bootstrap";
 import { FaPencil } from "react-icons/fa6";
 import * as client from "../client";
 
+export default function QuizDetailsPage() {
+  const params = useParams();
+  const cid = params.cid as string;
+  const qid = params.qid as string;
+  const router = useRouter();
 
-export default function QuizDetails() {
-    const { cid, qid } = useParams();
-    const router = useRouter();
-    const [quiz, setQuiz] = useState<client.Quiz | null>(null);
+  const [quiz, setQuiz] = useState<client.Quiz | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    const fetchQuiz = async () => {
-        if (qid) {
-            try {
-                const data = await client.findQuizById(qid as string);
-                setQuiz(data);
-            } catch (error) {
-                console.error("Error fetching quiz details:", error);
-            }
-        }
-    };
+  const loadQuiz = async () => {
+    if (!qid) return;
+    setLoading(true);
+    try {
+      const data = await client.findQuizById(qid);
+      setQuiz(data);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchQuiz();
-    }, [qid]);
+  useEffect(() => {
+    loadQuiz();
+  }, [qid]);
 
-    const handlePublishToggle = async () => {
-        if (!quiz) return;
-        const updatedQuiz = await client.updateQuiz({ ...quiz, published: !quiz.published });
-        await client.updateQuiz(updatedQuiz);
-        setQuiz(updatedQuiz);
-    };
-
-    if (!quiz) return <div>Loading quiz details...</div>;
-
+  if (loading || !quiz) {
     return (
         <div id="wd-quiz-details" className="p-4">
             <div className="d-flex align-items-center justify-content-end mb-3">
