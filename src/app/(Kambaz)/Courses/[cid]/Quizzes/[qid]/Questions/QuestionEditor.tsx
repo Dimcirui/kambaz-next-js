@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
-import { FaPlus, FaTrash } from "react-icons/fa6";
+import { FaCheck, FaPlus, FaTrash } from "react-icons/fa6";
 import * as client from "../../client";
 
 
@@ -140,12 +140,17 @@ export default function QuestionEditor({
                     <div>
                         {editedQuestion.choices?.map((choice, index) => (
                             <InputGroup key={index} className="mb-2">
-                                <InputGroup.Radio
-                                    name="correctAnswer"
-                                    checked={choice.isCorrect}
-                                    onChange={() => handleOptionsChange(index, "isCorrtect", true)}
-                                    title="Mark as Correct"
-                                />
+                                <InputGroup.Text className="bg-white">
+                                    <input
+                                        type="radio"
+                                        className="form-check-input mt-0"
+                                        name="correctAnswer"
+                                        checked={choice.isCorrect}
+                                        onChange={() => handleOptionsChange(index, "isCorrect", true)}
+                                        style={{ cursor: "pointer" }}
+                                        aria-label="Mark as correct answer"
+                                    />
+                                </InputGroup.Text>
                                 
                                 <Form.Control
                                     value={choice.text}
@@ -160,6 +165,12 @@ export default function QuestionEditor({
                                 >
                                     <FaTrash />
                                 </Button>
+
+                                {choice.isCorrect && (
+                                    <InputGroup.Text className="bg-success text-white">
+                                        <FaCheck />
+                                    </InputGroup.Text>
+                                )}
                             </InputGroup>
                         ))}
                         <div className="text-end">
