@@ -100,7 +100,11 @@ export default function QuizDetails() {
                             {quiz.published ? "Unpublished" : "Published"}
                         </Button>
 
-                        <Button variant="light" className="me-2 text-dark border">
+                        <Button
+                            variant="light"
+                            className="me-2 text-dark border"
+                            onClick={() => router.push(`/Courses/${cid}/Quizzes/${qid}/Preview`)}
+                        >
                             Preview
                         </Button>
 
@@ -117,7 +121,7 @@ export default function QuizDetails() {
                     <Button 
                         variant="danger" 
                         size="lg"
-                        onClick={() => alert("Start Quiz functionality coming soon!")}
+                        onClick={() => router.push(`/Courses/${cid}/Quizzes/${qid}/Preview`)}
                     >
                         Start Quiz
                     </Button>
