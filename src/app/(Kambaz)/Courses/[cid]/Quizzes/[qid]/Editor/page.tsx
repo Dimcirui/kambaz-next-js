@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Button,
   Col,
@@ -19,9 +19,22 @@ type FormState = {
   title: string;
   description: string;
   points: number;
+
+  quizType: string;
+  assignmentGroup: string;
+
   shuffleAnswers: boolean;
   timeLimitEnabled: boolean;
   timeLimitMinutes: number;
+
+  multipleAttempts: boolean;
+  howManyAttempts: number;
+  showCorrectAnswers: boolean;
+  accessCode: string;
+  oneQuestionAtATime: boolean;
+  webcamRequired: boolean;
+  lockQuestionsAfterAnswering: boolean;
+
   due: string;
   availableDate: string;
   untilDate: string;
@@ -29,22 +42,32 @@ type FormState = {
 
 export default function QuizEditorPage() {
   const params = useParams();
-  const cid = params.cid as string;
-  const qid = params.qid as string;
   const router = useRouter();
   const pathname = usePathname();
-  const activeTab = pathname?.includes("/Questions")
-    ? "questions"
-    : "details";
+  const searchParams = useSearchParams();
+
+  const cid = params.cid as string;
+  const qid = params.qid as string;
+  const isNew = searchParams.get("new") === "true";
+  const activeTab = pathname?.includes("/Questions") ? "questions" : "details";
 
   const [quiz, setQuiz] = useState<client.Quiz | null>(null);
   const [form, setForm] = useState<FormState>({
     title: "",
     description: "",
     points: 0,
-    shuffleAnswers: false,
-    timeLimitEnabled: false,
-    timeLimitMinutes: 0,
+    quizType: "Graded Quiz",
+    assignmentGroup: "Quizzes",
+    shuffleAnswers: true,
+    timeLimitEnabled: true,
+    timeLimitMinutes: 20,
+    multipleAttempts: false,
+    howManyAttempts: 1,
+    showCorrectAnswers: false,
+    accessCode: "",
+    oneQuestionAtATime: true,
+    webcamRequired: false,
+    lockQuestionsAfterAnswering: false,
     due: "",
     availableDate: "",
     untilDate: "",
@@ -61,9 +84,18 @@ export default function QuizEditorPage() {
         title: data.title ?? "",
         description: data.description ?? "",
         points: (data as any).points ?? 0,
+        quizType: data.quizType ?? "Graded Quiz",
+        assignmentGroup: data.assignmentGroup ?? "Quizzes",
         shuffleAnswers: data.shuffleAnswers ?? false,
         timeLimitEnabled: (data.timeLimit ?? 0) > 0,
         timeLimitMinutes: data.timeLimit ?? 0,
+        multipleAttempts: data.multipleAttempts ?? false,
+        howManyAttempts: data.howManyAttempts ?? 1,
+        showCorrectAnswers: data.showCorrectAnswers ?? false,
+        accessCode: data.accessCode ?? "",
+        oneQuestionAtATime: data.oneQuestionAtATime ?? false,
+        webcamRequired: data.webcamRequired ?? false,
+        lockQuestionsAfterAnswering: data.lockQuestionAfterAnswering ?? false,
         due: (data as any).due ? (data as any).due.substring(0, 10) : "",
         availableDate: (data as any).availableDate
           ? (data as any).availableDate.substring(0, 10)
@@ -96,12 +128,21 @@ export default function QuizEditorPage() {
       title: form.title,
       description: form.description,
       points: form.points,
+      quizType: form.quizType,
+      assignmentGroup: form.assignmentGroup,
       shuffleAnswers: form.shuffleAnswers,
       timeLimit: form.timeLimitEnabled ? Number(form.timeLimitMinutes) : 0,
+      multipleAttempts: form.multipleAttempts,
+      howManyAttempts: form.howManyAttempts,
+      showCorrectAnswers: form.showCorrectAnswers,
+      accessCode: form.accessCode,
+      oneQuestionAtATime: form.oneQuestionAtATime,
+      webcamRequired: form.webcamRequired,
+      lockQuestionsAfterAnswering: form.lockQuestionsAfterAnswering,
       due: form.due || undefined,
       availableDate: form.availableDate || undefined,
       untilDate: form.untilDate || undefined,
-    } as client.Quiz;
+    };
   };
 
   const handleSave = async () => {
@@ -120,8 +161,15 @@ export default function QuizEditorPage() {
     router.push(`/Courses/${cid}/Quizzes`); // Go back to list page 
   };
 
-  const handleCancel = () => {
-    router.push(`/Courses/${cid}/Quizzes`); // Go back to list page
+  const handleCancel = async () => {
+    if (isNew && qid) {
+      try {
+        await client.deleteQuiz(qid);
+      } catch (error) {
+        console.error("Error deleting new quiz on cancel:", error);
+      }
+    }
+    router.push(`/Courses/${cid}/Quizzes`);
   };
 
   if (loading || !quiz) {
@@ -178,61 +226,164 @@ export default function QuizEditorPage() {
           />
         </Form.Group>
 
+        <Form.Group className="mb-3" controlId="quizType">
+          <Form.Label>Quiz Type</Form.Label>
+          <Form.Select
+            value={form.quizType}
+            onChange={(e) => handleChange("quizType", e.target.value)}
+          >
+            <option value="Graded Quiz">Graded Quiz</option>
+            <option value="Practice Quiz">Practice Quiz</option>
+            <option value="Graded Survey">Graded Survey</option>
+            <option value="Ungraded Survey">Ungraded Survey</option>
+          </Form.Select>
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="points">
+          <Form.Label>Points</Form.Label>
+          <Form.Control
+            type="number"
+            value={form.points}
+            onChange={(e) =>
+              handleChange("points", Number(e.target.value) || 0)
+            }
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="assignmentGroup">
+          <Form.Label>Assignment Group</Form.Label>
+          <Form.Select
+            value={form.assignmentGroup}
+            onChange={(e) => handleChange("assignmentGroup", e.target.value)}
+          >
+            <option value="Quizzes">Quizzes</option>
+            <option value="Exams">Exams</option>
+            <option value="Assignments">Assignments</option>
+            <option value="Projects">Projects</option>
+          </Form.Select>
+        </Form.Group>
+
+        <h5 className="mb-3">Options</h5>
+
+        <Col md={4}>
+          <Form.Group className="mb-3" controlId="shuffleAnswers">
+            <Form.Check
+              type="checkbox"
+              label="Shuffle answers"
+              checked={form.shuffleAnswers}
+              onChange={(e) =>
+                handleChange("shuffleAnswers", e.target.checked)
+              }
+            />
+          </Form.Group>
+        </Col>
+
         <Row>
-          <Col md={4}>
-            <Form.Group className="mb-3" controlId="points">
-              <Form.Label>Points</Form.Label>
-              <Form.Control
-                type="number"
-                value={form.points}
-                onChange={(e) =>
-                  handleChange("points", Number(e.target.value) || 0)
-                }
-              />
-            </Form.Group>
-          </Col>
-
-          <Col md={4}>
-            <Form.Group className="mb-3" controlId="shuffleAnswers">
-              <Form.Check
-                type="checkbox"
-                label="Shuffle answers"
-                checked={form.shuffleAnswers}
-                onChange={(e) =>
-                  handleChange("shuffleAnswers", e.target.checked)
-                }
-              />
-            </Form.Group>
-          </Col>
-
-          <Col md={4}>
-            <Form.Group className="mb-3" controlId="timeLimitMinutes">
-              <Form.Label>Time limit</Form.Label>
-              <div className="d-flex align-items-center">
+            <Col md={2}>
                 <Form.Check
                   type="checkbox"
+                  label="Time limit"
                   className="me-2"
                   checked={form.timeLimitEnabled}
                   onChange={(e) =>
                     handleChange("timeLimitEnabled", e.target.checked)
                   }
-                />
-                <Form.Control
-                  type="number"
-                  value={form.timeLimitMinutes}
-                  disabled={!form.timeLimitEnabled}
-                  onChange={(e) =>
-                    handleChange(
-                      "timeLimitMinutes",
-                      Number(e.target.value) || 0
-                    )
-                  }
-                />
-                <span className="ms-2">minutes</span>
-              </div>
-            </Form.Group>
-          </Col>
+                  />
+            </Col>
+            <Col md={2}>
+                <div className="d-flex align-items-center">
+                  <Form.Control
+                    type="number"
+                    style={{ width: "60px" }}
+                    value={form.timeLimitMinutes}
+                    disabled={!form.timeLimitEnabled}
+                    onChange={(e) =>
+                      handleChange(
+                        "timeLimitMinutes",
+                        Number(e.target.value) || 0
+                      )
+                    }
+                    />
+                  <span className="ms-2">minutes</span>
+                </div>
+            </Col>
         </Row>
+
+        <Form.Group className="mb-3" controlId="multipleAttempts">
+          <Form.Check
+            type="checkbox"
+            label="Allow multiple attempts"
+            checked={form.multipleAttempts}
+            onChange={(e) =>
+              handleChange("multipleAttempts", e.target.checked)
+            }
+          />
+          {form.multipleAttempts && (
+            <div className="mt-2">
+              <Form.Label>Number of attempts allowed</Form.Label>
+              <Form.Control
+                type="number"
+                value={form.howManyAttempts}
+                onChange={(e) =>
+                  handleChange("howManyAttempts", Number(e.target.value) || 0)
+                }
+              />
+            </div>
+          )}
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="showCorrectAnswers">
+          <Form.Check
+            type="checkbox"
+            label="Show correct answers after quiz is completed"
+            checked={form.showCorrectAnswers}
+            onChange={(e) =>
+              handleChange("showCorrectAnswers", e.target.checked)
+            }
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="accessCode">
+          <Form.Label>Access Code</Form.Label>
+          <Form.Control
+            type="text"
+            value={form.accessCode}
+            onChange={(e) => handleChange("accessCode", e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="oneQuestionAtATime">
+          <Form.Check
+            type="checkbox"
+            label="One question at a time"
+            checked={form.oneQuestionAtATime}
+            onChange={(e) =>
+              handleChange("oneQuestionAtATime", e.target.checked)
+            }
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="webcamRequired">
+          <Form.Check
+            type="checkbox"
+            label="Webcam required"
+            checked={form.webcamRequired}
+            onChange={(e) =>
+              handleChange("webcamRequired", e.target.checked)
+            }
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="lockQuestionsAfterAnswering">
+          <Form.Check
+            type="checkbox"
+            label="Lock questions after answering"
+            checked={form.lockQuestionsAfterAnswering}
+            onChange={(e) =>
+              handleChange("lockQuestionsAfterAnswering", e.target.checked)
+            }
+          />
+        </Form.Group>
 
         <Row>
           <Col md={4}>
