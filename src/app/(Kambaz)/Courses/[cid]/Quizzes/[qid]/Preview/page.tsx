@@ -119,7 +119,7 @@ const QuestionItem = ({
                         <div className="mt-2 text-muted small">
                             <strong>Correct Answer(s): </strong>
                             {question.type === "FILL_IN_THE_BLANK" 
-                                ? (question.correctAnswer || []).join(", ") 
+                                ? (question.correctAnswer || []).join(" or ") 
                                 : (question.choices || []).find((c: any) => c.isCorrect)?.text}
                         </div>
                     </Card.Footer>
