@@ -22,14 +22,15 @@ const QuestionItem = ({
         const isFillInBlankCorrect = () => {
             if (question.type !== "FILL_IN_THE_BLANK") return false;
             
-            const userAnswers = answers[question._id!] || {};
+            const userAnswer = (answers[question._id!] || "").trim().toLowerCase();
             const correctAnswers = question.correctAnswer || [];
 
             if (correctAnswers.length === 0) return false;
+            if (!userAnswer) return false;
 
-            return correctAnswers.every((correctAns, idx) => {
-                const userAns = userAnswers[idx] || "";
-                return correctAns.trim().toLowerCase() === userAns.trim().toLowerCase();
+            return correctAnswers.some((correctAns: any) => {
+                const userAns = typeof correctAns === 'string' ? correctAns : correctAns.text;
+                return userAns.trim().toLowerCase() === userAnswer;
             });
         };
 
@@ -77,39 +78,25 @@ const QuestionItem = ({
 
                     {question.type === "FILL_IN_THE_BLANK" && (
                         <div>
-                            {(question.correctAnswer && question.correctAnswer.length > 0) ? (
-                                question.correctAnswer.map((_: any, idx: number) => {
-                                const val = (answers[question._id!] || {})[idx] || "";
-                                return (
-                                    <Form.Group
-                                        key={idx}
-                                        as={Row}
-                                        className="mb-3 align-items-center"
-                                    >
-                                        <Form.Label column sm={3} className="fw-bold">
-                                            Blank {idx + 1}:
-                                        </Form.Label>
+                            <Form.Group as={Row} className="mb-3 align-items-center">
+                                <Form.Label column sm={3} className="fw-bold">
+                                    Your Answer
+                                </Form.Label>
 
-                                        <Col sm={9}>
-                                            <Form.Control
-                                                type="text"
-                                                value={val}
-                                                onChange={(e) => {
-                                                    const curAnswers = typeof answers[question._id!] === 'object'
-                                                        ? { ...answers[question._id!] }
-                                                        : {};
-                                                    curAnswers[idx] = e.target.value;
-                                                    handleAnswerChange(question._id!, curAnswers);
-                                                }}
-                                                disabled={submitted}
-                                            />
-                                        </Col>
-                                    </Form.Group>
-                                );
-                            })
-                            ) : (
-                                <div className="text-secondary">No blanks defined for this question.</div>
-                            )}
+                                <Col sm={9}>
+                                    <Form.Control
+                                        type="text"
+                                        value={answers[question._id!] || ""}
+                                        onChange={(e) => handleAnswerChange(question._id!, e.target.value)}
+                                        disabled={submitted}
+                                        className={
+                                            submitted 
+                                            ? (isFillInBlankCorrect() ? "border-success bg-success-subtle" : "border-danger bg-danger-subtle") 
+                                            : ""
+                                        }
+                                    />
+                                </Col>
+                            </Form.Group>
                         </div>
                     )}
                 </Card.Body>

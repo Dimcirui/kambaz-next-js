@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Nav, Spinner } from "react-bootstrap";
 import * as client from "../../client";
@@ -10,32 +10,34 @@ import QuestionEditor from "./QuestionEditor";
 
 export default function QuizQuestionsPage() {
   const params = useParams();
+  const router = useRouter();
+
   const cid = params.cid as string;
   const qid = params.qid as string;
   const pathname = usePathname();
-  const activeTab = pathname?.includes("/Questions")
-    ? "questions"
-    : "details";
+  const activeTab = pathname?.includes("/Questions") ? "questions" : "details";
 
   const [questions, setQuestions] = useState<client.Question[]>([]);
+  const [quiz, setQuiz] = useState<client.Quiz | null>(null);
   const [loading, setLoading] = useState(true);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
 
-  const fetchQuestions = async () => {
+  const fetchData = async () => {
     if (!qid) return;
     try {
-        const data = await client.findQuestionsForQuiz(qid);
-        setQuestions(data);
+        const questionData = await client.findQuestionsForQuiz(qid);
+        setQuestions(questionData);
+        const quizData = await client.findQuizById(qid);
+        setQuiz(quizData);
     } catch (error) {
         console.error("Error fetching questions:", error);
-        setQuestions([]);
     } finally {
         setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchQuestions();
+    fetchData();
   }, [qid]);
 
   const handleNewQuestion = async () => {
@@ -50,7 +52,7 @@ export default function QuizQuestionsPage() {
     };
 
     const createdQuestion = await client.createQuestion(qid, newQuestion);
-    await fetchQuestions();
+    await fetchData();
     setEditingQuestionId(createdQuestion._id);
   };
 
@@ -58,7 +60,22 @@ export default function QuizQuestionsPage() {
     const confirmed = confirm("Are you sure you want to delete this question?");
     if (!confirmed) return;
         await client.deleteQuestion(questionId);
-        fetchQuestions();
+        fetchData();
+  };
+
+  const handleCancel = () => {
+    router.push(`/Courses/${cid}/Quizzes`);
+  };
+
+  const handleSave = async () => {
+    router.push(`/Courses/${cid}/Quizzes/${qid}`);
+  }
+
+  const handleSaveAndPublish = async () => {
+    if (quiz) {
+      await client.updateQuiz({ ...quiz, published: true });
+      router.push(`/Courses/${cid}/Quizzes`);
+    }
   };
 
   if (loading) {
@@ -94,6 +111,14 @@ export default function QuizQuestionsPage() {
 
       {/* Title Button */}
       <div className="text-center mb-4">
+        {/* Not implemented yet */}
+        <Button variant="secondary" className="me-2" onClick={() => {}}>
+          <FaPlus className="me-1" /> New Question Group
+        </Button>
+        <Button variant="secondary" className="me-2" onClick={() => {}}>
+          <FaPlus className="me-1" /> Find Questions
+        </Button>
+
         <Button variant="secondary" onClick={handleNewQuestion}>
             <FaPlus className="me-2" /> New Question
         </Button>
@@ -115,11 +140,11 @@ export default function QuizQuestionsPage() {
                             question={q}
                             onSave={() => {
                                 setEditingQuestionId(null);
-                                fetchQuestions();
+                                fetchData();
                             }}
                             onCancel={() => {
                                 setEditingQuestionId(null);
-                                fetchQuestions();
+                                fetchData();
                             }}
                         />
                     ) : (
@@ -158,6 +183,18 @@ export default function QuizQuestionsPage() {
                 </div>
             ))}
         </div>
+
+      <div className="d-flex gap-2 mt-3">
+        <Button variant="secondary" onClick={handleCancel}>
+          Cancel
+        </Button>
+        <Button variant="primary" onClick={handleSave}>
+          Save
+        </Button>
+        <Button variant="success" onClick={handleSaveAndPublish}>
+          Save &amp; Publish
+        </Button>
+      </div>
     </div>
   );
 }

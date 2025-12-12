@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Button,
   Col,
@@ -29,13 +29,14 @@ type FormState = {
 
 export default function QuizEditorPage() {
   const params = useParams();
-  const cid = params.cid as string;
-  const qid = params.qid as string;
   const router = useRouter();
   const pathname = usePathname();
-  const activeTab = pathname?.includes("/Questions")
-    ? "questions"
-    : "details";
+  const searchParams = useSearchParams();
+
+  const cid = params.cid as string;
+  const qid = params.qid as string;
+  const isNew = searchParams.get("new") === "true";
+  const activeTab = pathname?.includes("/Questions") ? "questions" : "details";
 
   const [quiz, setQuiz] = useState<client.Quiz | null>(null);
   const [form, setForm] = useState<FormState>({
@@ -120,8 +121,15 @@ export default function QuizEditorPage() {
     router.push(`/Courses/${cid}/Quizzes`); // Go back to list page 
   };
 
-  const handleCancel = () => {
-    router.push(`/Courses/${cid}/Quizzes`); // Go back to list page
+  const handleCancel = async () => {
+    if (isNew && qid) {
+      try {
+        await client.deleteQuiz(qid);
+      } catch (error) {
+        console.error("Error deleting new quiz on cancel:", error);
+      }
+    }
+    router.push(`/Courses/${cid}/Quizzes`);
   };
 
   if (loading || !quiz) {

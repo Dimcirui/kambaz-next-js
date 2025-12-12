@@ -18,7 +18,12 @@ export default function Quizzes() {
         if (cid) {
             try {
                 const data = await client.findQuizzesForCourse(cid as string);
-                setQuizzes(data);
+                const sortedData = data.sort((a: any, b: any) => {
+                    const dateA = new Date(a.availableDate || 0);
+                    const dateB = new Date(b.availableDate || 0);
+                    return dateB.getTime() - dateA.getTime();
+                });
+                setQuizzes(sortedData);
             } catch (error) {
                 console.error("Error fetching quizzes:", error);
                 setQuizzes([]);
@@ -41,7 +46,7 @@ export default function Quizzes() {
             availableDate: new Date().toISOString().split('T')[0] // default available date today
         };
         const createdQuiz = await client.createQuiz(cid as string, newQuiz);
-        router.push(`/Courses/${cid}/Quizzes/${createdQuiz._id}`);
+        router.push(`/Courses/${cid}/Quizzes/${createdQuiz._id}/Editor?new=true`);
     };
     
     const handleDeleteQuiz = async (quizId: string) => {
