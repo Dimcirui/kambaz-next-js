@@ -8,10 +8,15 @@ import Link from "next/link";
 import { Button, Dropdown, ListGroup } from "react-bootstrap";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { BsRocketFill } from "react-icons/bs";
+import { useSelector } from "react-redux";
 
 export default function Quizzes() {
     const { cid } = useParams();
     const router = useRouter();
+    const {currentUser} = useSelector((state: any) => state.accountReducer);
+    const isFaculty = currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
+
+
     const [quizzes, setQuizzes] = useState<client.Quiz[]>([]);
 
     const fetchQuizzes = async () => {
@@ -85,6 +90,7 @@ export default function Quizzes() {
                     id="wd-search-quiz"
                 />
 
+                { isFaculty && (
                 <div>
                     <Button
                         variant="danger"
@@ -99,6 +105,7 @@ export default function Quizzes() {
                         <IoEllipsisVertical className="fs-4" />
                     </Button>
                 </div>
+                )}
             </div>
 
 
@@ -109,7 +116,7 @@ export default function Quizzes() {
 
             {/* Quiz List Section */}
             <ListGroup className="rounded-0" id="wd-quiz-list">
-                {quizzes.length === 0 && (
+                {quizzes.length === 0 && isFaculty && (
                     <div className="text-center p-5 text-secondary">
                         No quizzes available. Click &quot;+ Quiz&quot; to create one.
                     </div>
@@ -148,7 +155,7 @@ export default function Quizzes() {
 
                         {/* Right Side Bar*/}
                         <div className="flex items-center space-x-4">
-                            <span onClick={() => handleTogglePublish(quiz)} className="me-3 fs-4">
+                            <span onClick={() => {if (isFaculty) handleTogglePublish(quiz)}} className="me-3 fs-4">
                                 {quiz.published ? (
                                     <FaCheckCircle className="text-success" />
                                 ) : (
@@ -156,6 +163,7 @@ export default function Quizzes() {
                                 )}
                             </span>
 
+                            { isFaculty && (
                             <Dropdown className="d-inline" align="end">
                                 <Dropdown.Toggle
                                     as="div"
@@ -182,6 +190,7 @@ export default function Quizzes() {
                                     </Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
+                            )}
                         </div>
                     </ListGroup.Item>
                 ))}
