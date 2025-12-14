@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kambaz - Course Management System
 
-## Getting Started
+> **Note**: This repository contains coursework in progress. The `main` branch shows the initial implementation. For the latest features and updates, see branch `final_project`.
+>
+> 📌 **Latest Version**: [View final_project branch](https://github.com/Dimcirui/kambaz-next-js/tree/final_project)
 
-First, run the development server:
+A full-stack course management web application built with Next.js, TypeScript, and React. This project implements a Canvas-like learning management system with module organization, assignment tracking, and course content delivery.
 
+## Features
+
+### Implemented
+- **Course Module Management**: Organize course content into hierarchical modules with drag-and-drop reordering
+- **Assignment System**: Create, publish, and track assignments with due dates
+- **User Interface**: Clean, responsive UI built with React Bootstrap
+- **Navigation**: Dynamic routing with Next.js for seamless page transitions
+- **State Management**: Redux integration for application state handling
+- **Single Page Application**: Fast, interactive user experience with client-side rendering
+
+### Planned Features
+- **RESTful API**: Express.js backend with Node.js
+- **Database Integration**: MongoDB with Atlas cloud hosting
+- **Data Persistence**: Full CRUD operations for courses, modules, and assignments
+
+## Tech Stack
+
+- **Frontend**: React, TypeScript, Next.js
+- **Styling**: Bootstrap, CSS
+- **State Management**: Redux
+- **Planned Backend**: Node.js, Express.js, MongoDB
+
+## Project Structure
+
+Based on a structured curriculum covering:
+- Building Next.js user interfaces with HTML
+- Styling with CSS and Bootstrap
+- Creating single-page applications with React
+- State management in React applications
+- RESTful web APIs with Express.js
+- Database integration with MongoDB
+
+## Installation
 ```bash
+# Clone the repository
+git clone https://github.com/yourusername/kambaz-next-js.git
+
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
