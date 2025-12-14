@@ -1,15 +1,43 @@
+"use client";
+import { useSelector } from "react-redux";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import Modules from "../Modules/page";
 import CourseStatus from "./Status";
+
 export default function Home() {
- return (
-   <div id="wd-home">
-     <table>
-       <tbody>
-         <tr>
-           <td valign="top" width="70%"> <Modules /> </td>
-           <td valign="top"> <CourseStatus /> </td>
-         </tr>
-       </tbody>
-     </table>
-   </div>
+  const { cid } = useParams();
+  const router = useRouter();
+
+  const { enrolledCourses } = useSelector((state: any) => state.enrollmentsReducer);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+
+  const isEnrolled = enrolledCourses.includes(cid as string);
+  const isFaculty = currentUser?.role === "FACULTY";
+
+  useEffect(() => {
+    if (!currentUser) {
+      router.push("/Account/Signin");
+      return;
+    }
+
+    const isEnrolled = enrolledCourses.includes(cid as string);
+    const isFaculty = currentUser.role === "FACULTY";
+
+    if (!isEnrolled && !isFaculty) {
+      router.push("/Dashboard"); 
+    }
+  }, [cid, enrolledCourses, currentUser, router]);
+
+  return (
+    <div id="wd-home">
+      <div className="d-flex" id="wd-home">
+        <div className="flex-fill me-3">
+          <Modules />
+        </div>
+        <div className="d-none d-lg-block">
+          <CourseStatus />
+        </div>
+      </div>
+    </div>
 );}

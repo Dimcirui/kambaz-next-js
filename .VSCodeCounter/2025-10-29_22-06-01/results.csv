@@ -1,0 +1,53 @@
+"filename", "language", "TypeScript", "TypeScript JSX", "PostCSS", "JSON", "comment", "blank", "total"
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Account\Navigation.tsx", "TypeScript JSX", 0, 18, 0, 0, 0, 1, 19
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Account\Profile\page.tsx", "TypeScript JSX", 0, 61, 0, 0, 0, 1, 62
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Account\Signin\page.tsx", "TypeScript JSX", 0, 48, 0, 0, 0, 1, 49
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Account\Signup\page.tsx", "TypeScript JSX", 0, 20, 0, 0, 13, 2, 35
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Account\layout.tsx", "TypeScript JSX", 0, 19, 0, 0, 0, 1, 20
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Account\page.tsx", "TypeScript JSX", 0, 11, 0, 0, 0, 2, 13
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Account\reducer.ts", "TypeScript", 15, 0, 0, 0, 0, 3, 18
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Calendar\page.tsx", "TypeScript JSX", 0, 6, 0, 0, 0, 1, 7
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Assignments\AssignmentControlButtons.tsx", "TypeScript JSX", 0, 14, 0, 0, 0, 1, 15
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Assignments\AssignmentIcon.tsx", "TypeScript JSX", 0, 10, 0, 0, 0, 1, 11
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Assignments\AssignmentsControls.tsx", "TypeScript JSX", 0, 22, 0, 0, 0, 1, 23
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Assignments\[aid]\AssignmentEditor.tsx", "TypeScript JSX", 0, 171, 0, 0, 4, 15, 190
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Assignments\[aid]\Editor.tsx", "TypeScript JSX", 0, 91, 0, 0, 0, 4, 95
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Assignments\[aid]\page.tsx", "TypeScript JSX", 0, 182, 0, 0, 203, 30, 415
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Assignments\page.tsx", "TypeScript JSX", 0, 62, 0, 0, 0, 5, 67
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Assignments\reducer.ts", "TypeScript", 38, 0, 0, 0, 0, 7, 45
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Assignments\style.css", "PostCSS", 0, 0, 17, 0, 0, 2, 19
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Breadcrumb.tsx", "TypeScript JSX", 0, 11, 0, 0, 0, 2, 13
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Grades\page.tsx", "TypeScript JSX", 0, 6, 0, 0, 0, 1, 7
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Home\Status.tsx", "TypeScript JSX", 0, 36, 0, 0, 16, 1, 53
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Home\page.tsx", "TypeScript JSX", 0, 15, 0, 0, 0, 2, 17
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Modules\GreenCheckmark.tsx", "TypeScript JSX", 0, 7, 0, 0, 0, 0, 7
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Modules\LessonControlButtons.tsx", "TypeScript JSX", 0, 10, 0, 0, 0, 0, 10
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Modules\ModuleControlButtons.tsx", "TypeScript JSX", 0, 17, 0, 0, 0, 1, 18
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Modules\ModuleEditor.tsx", "TypeScript JSX", 0, 23, 0, 0, 0, 1, 24
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Modules\ModulesControls.tsx", "TypeScript JSX", 0, 50, 0, 0, 3, 2, 55
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Modules\page.tsx", "TypeScript JSX", 0, 76, 0, 0, 0, 8, 84
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Modules\reducer.ts", "TypeScript", 38, 0, 0, 0, 0, 0, 38
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Navigation.tsx", "TypeScript JSX", 0, 22, 0, 0, 0, 4, 26
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\People\Table\page.tsx", "TypeScript JSX", 0, 38, 0, 0, 36, 3, 77
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\People\page.tsx", "TypeScript JSX", 0, 4, 0, 0, 2, 1, 7
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Piazza\page.tsx", "TypeScript JSX", 0, 6, 0, 0, 0, 1, 7
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Quizzes\page.tsx", "TypeScript JSX", 0, 6, 0, 0, 0, 1, 7
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\Zoom\page.tsx", "TypeScript JSX", 0, 6, 0, 0, 0, 1, 7
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\layout.tsx", "TypeScript JSX", 0, 36, 0, 0, 0, 5, 41
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\page.tsx", "TypeScript JSX", 0, 5, 0, 0, 0, 3, 8
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\[cid]\reducer.ts", "TypeScript", 15, 0, 0, 0, 0, 3, 18
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Courses\reducer.ts", "TypeScript", 29, 0, 0, 0, 0, 3, 32
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Dashboard\page.tsx", "TypeScript JSX", 0, 92, 0, 0, 0, 12, 104
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Database\assignments.json", "JSON", 0, 0, 0, 11, 0, 0, 11
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Database\courses.json", "JSON", 0, 0, 0, 84, 0, 0, 84
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Database\enrollments.json", "JSON", 0, 0, 0, 6, 0, 0, 6
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Database\index.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 6
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Database\modules.json", "JSON", 0, 0, 0, 206, 0, 5, 211
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Database\users.json", "JSON", 0, 0, 0, 128, 0, 0, 128
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Inbox\page.tsx", "TypeScript JSX", 0, 6, 0, 0, 0, 1, 7
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\Navigation.tsx", "TypeScript JSX", 0, 43, 0, 0, 42, 3, 88
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\layout.tsx", "TypeScript JSX", 0, 21, 0, 0, 0, 2, 23
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\page.tsx", "TypeScript JSX", 0, 4, 0, 0, 0, 1, 5
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\store.ts", "TypeScript", 15, 0, 0, 0, 2, 1, 18
+"c:\Users\Sheeran\Desktop\Univ\Courses\5610_web_development\2049\winter\webdev\kambaz-next-js\src\app\(Kambaz)\style.css", "PostCSS", 0, 0, 33, 0, 0, 7, 40
+"Total", "-", 156, 1275, 50, 435, 321, 153, 2390
