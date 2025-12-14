@@ -64,53 +64,6 @@ export default function Signin() {
         Sign up
       </Link>
 
-      {/* Quick-fill buttons for testing */}
-      <div className="mt-4 p-3 border rounded bg-light">
-        <h6 className="text-muted mb-2">Development: Quick Fill</h6>
-        <div className="d-flex flex-column gap-2">
-          {testAccounts.map((account, index) => (
-            <Button
-              key={index}
-              variant="outline-secondary"
-              size="sm"
-              className="text-start"
-              onClick={() => handleQuickFill(account)}
-              title={`Click to fill: ${account.username} / ${account.password}`}
-            >
-              <strong>{account.role}:</strong> {account.username}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-
-      {/* Footer */}
-      <div id="wd-final-project-footer" className="mt-4">
-
-        <h5>Final Project - Kambaz Quizzes</h5>
-        <p className="mb-2">
-          Team Members: Xiaojie Cui (Section 05)
-          , Xueyuan Sun (Section 05)
-        </p>
-
-        <p className="mb-0">
-          <a
-            href="https://github.com/Dimcirui/kambaz-next-js/tree/final_project"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Front-end Repository
-          </a>
-          <span className="mx-2">|</span>
-          <a
-            href="https://github.com/Dimcirui/kambaz-node-server-app/tree/final_project"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Back-end Repository
-          </a>
-        </p>
-      </div>
     </div>
     );
   }
