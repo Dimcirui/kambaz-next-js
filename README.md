@@ -1,22 +1,15 @@
 # Kambaz - Course Management System
 
-> **Note**: This repository contains coursework in progress. The `main` branch shows the initial implementation. For the latest features and updates, see branch `final_project`.
->
-> 📌 **Latest Version**: [View final_project branch](https://github.com/Dimcirui/kambaz-next-js/tree/final_project)
-
 A full-stack course management web application built with Next.js, TypeScript, and React. This project implements a Canvas-like learning management system with module organization, assignment tracking, and course content delivery.
 
 ## Features
 
-### Implemented
 - **Course Module Management**: Organize course content into hierarchical modules with drag-and-drop reordering
 - **Assignment System**: Create, publish, and track assignments with due dates
 - **User Interface**: Clean, responsive UI built with React Bootstrap
 - **Navigation**: Dynamic routing with Next.js for seamless page transitions
 - **State Management**: Redux integration for application state handling
 - **Single Page Application**: Fast, interactive user experience with client-side rendering
-
-### Planned Features
 - **RESTful API**: Express.js backend with Node.js
 - **Database Integration**: MongoDB with Atlas cloud hosting
 - **Data Persistence**: Full CRUD operations for courses, modules, and assignments
@@ -26,7 +19,7 @@ A full-stack course management web application built with Next.js, TypeScript, a
 - **Frontend**: React, TypeScript, Next.js
 - **Styling**: Bootstrap, CSS
 - **State Management**: Redux
-- **Planned Backend**: Node.js, Express.js, MongoDB
+- **Backend**: Node.js, Express.js, MongoDB
 
 ## Project Structure
 
