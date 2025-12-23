@@ -6,6 +6,7 @@ import { Button, Col, Container, Form, Nav, Row, Spinner, Badge, Card } from "re
 import { FaSearch, FaPlus, FaQuestionCircle, FaStickyNote, FaUser } from "react-icons/fa";
 import * as client from "./client";
 import PostEditor from "./PostEditor";
+import AnswerSection from "./AnswerSection";
 
 export default function Pazza() {
   const { cid } = useParams();
@@ -45,6 +46,35 @@ export default function Pazza() {
     } catch (error) {
         console.error("Failed to create post", error);
         alert("Failed to create post. Check console.");
+    }
+  };
+
+  const handleUpdateAnswer = async (type: "STUDENT" | "INSTRUCTOR", text: string) => {
+    if (!selectedPost || !cid) return;
+
+    const answerData = {
+        text: text,
+        author: "Me", // hardcoded for now
+        date: new Date().toISOString()
+    };
+
+    const updates = type === "STUDENT" 
+        ? { studentAnswer: answerData } 
+        : { instructorAnswer: answerData };
+
+    try {
+        await client.updatePost(selectedPost._id, updates);
+        
+        setSelectedPost({
+            ...selectedPost,
+            ...updates
+        });
+
+        fetchPosts(); 
+        
+    } catch (error) {
+        console.error("Failed to update answer", error);
+        alert("Failed to save answer.");
     }
   };
 
@@ -176,19 +206,21 @@ export default function Pazza() {
                         {selectedPost.details}
                     </div>
 
-                    <Card className="mb-3 border-0 bg-light">
-                         <Card.Body className="text-center text-muted p-5">
-                             <h5>Student Answer</h5>
-                             <p>Feature coming in Phase 3</p>
-                         </Card.Body>
-                    </Card>
+                    <AnswerSection 
+                        title="Student Answer"
+                        variant="student"
+                        answer={selectedPost.studentAnswer}
+                        onSave={(text) => handleUpdateAnswer("STUDENT", text)}
+                        isEditable={true}
+                    />
 
-                    <Card className="mb-3 border-0 bg-light">
-                         <Card.Body className="text-center text-muted p-5">
-                             <h5>Instructor Answer</h5>
-                             <p>Feature coming in Phase 3</p>
-                         </Card.Body>
-                    </Card>
+                    <AnswerSection 
+                        title="Instructor Answer"
+                        variant="instructor"
+                        answer={selectedPost.instructorAnswer}
+                        onSave={(text) => handleUpdateAnswer("INSTRUCTOR", text)}
+                        isEditable={true} // hardcoded true for testing, the real value should be role === "FACULTY"
+                    />
                 </div>
             ) : (
                 <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted p-5">
