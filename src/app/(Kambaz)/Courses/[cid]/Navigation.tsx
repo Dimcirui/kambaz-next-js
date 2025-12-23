@@ -6,7 +6,7 @@ export default function CourseNavigation() {
   const pathname = usePathname();
   const params = useParams();
   const cid = params.cid;
-  const links = ["Home", "Modules", "Piazza", "Zoom", "Assignments", "Quizzes", "Grades", "People"];
+  const links = ["Home", "Modules", "Pazza", "Zoom", "Assignments", "Quizzes", "Grades", "People"];
 
   return (
     <div id="wd-courses-navigation" className="wd list-group fs-5 rounded-0">

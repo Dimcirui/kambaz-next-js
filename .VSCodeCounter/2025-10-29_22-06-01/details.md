@@ -42,7 +42,7 @@ Total : 51 files,  1916 codes, 321 comments, 153 blanks, all 2390 lines
 | [src/app/(Kambaz)/Courses/\[cid\]/Navigation.tsx](/src/app/(Kambaz)/Courses/%5Bcid%5D/Navigation.tsx) | TypeScript JSX | 22 | 0 | 4 | 26 |
 | [src/app/(Kambaz)/Courses/\[cid\]/People/Table/page.tsx](/src/app/(Kambaz)/Courses/%5Bcid%5D/People/Table/page.tsx) | TypeScript JSX | 38 | 36 | 3 | 77 |
 | [src/app/(Kambaz)/Courses/\[cid\]/People/page.tsx](/src/app/(Kambaz)/Courses/%5Bcid%5D/People/page.tsx) | TypeScript JSX | 4 | 2 | 1 | 7 |
-| [src/app/(Kambaz)/Courses/\[cid\]/Piazza/page.tsx](/src/app/(Kambaz)/Courses/%5Bcid%5D/Piazza/page.tsx) | TypeScript JSX | 6 | 0 | 1 | 7 |
+| [src/app/(Kambaz)/Courses/\[cid\]/Pazza/page.tsx](/src/app/(Kambaz)/Courses/%5Bcid%5D/Pazza/page.tsx) | TypeScript JSX | 6 | 0 | 1 | 7 |
 | [src/app/(Kambaz)/Courses/\[cid\]/Quizzes/page.tsx](/src/app/(Kambaz)/Courses/%5Bcid%5D/Quizzes/page.tsx) | TypeScript JSX | 6 | 0 | 1 | 7 |
 | [src/app/(Kambaz)/Courses/\[cid\]/Zoom/page.tsx](/src/app/(Kambaz)/Courses/%5Bcid%5D/Zoom/page.tsx) | TypeScript JSX | 6 | 0 | 1 | 7 |
 | [src/app/(Kambaz)/Courses/\[cid\]/layout.tsx](/src/app/(Kambaz)/Courses/%5Bcid%5D/layout.tsx) | TypeScript JSX | 36 | 0 | 5 | 41 |

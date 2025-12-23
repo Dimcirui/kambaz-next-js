@@ -40,7 +40,7 @@ Summary / [Details](details.md) / [Diff Summary](diff.md) / [Diff Details](diff-
 | Courses\\[cid]\\People | 2 | 42 | 38 | 4 | 84 |
 | Courses\\[cid]\\People (Files) | 1 | 4 | 2 | 1 | 7 |
 | Courses\\[cid]\\People\\Table | 1 | 38 | 36 | 3 | 77 |
-| Courses\\[cid]\\Piazza | 1 | 6 | 0 | 1 | 7 |
+| Courses\\[cid]\\Pazza | 1 | 6 | 0 | 1 | 7 |
 | Courses\\[cid]\\Quizzes | 1 | 6 | 0 | 1 | 7 |
 | Courses\\[cid]\\Zoom | 1 | 6 | 0 | 1 | 7 |
 | Dashboard | 1 | 92 | 0 | 12 | 104 |
