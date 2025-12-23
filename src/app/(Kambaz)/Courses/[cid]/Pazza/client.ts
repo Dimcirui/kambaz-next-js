@@ -28,7 +28,6 @@ export const createPost = async (cid: string, post: any) => {
   return response.data;
 };
 
-// 后续还会用到 update 和 delete，先预留
 export const updatePost = async (pid: string, post: any) => {
     const response = await axios.put(`${REMOTE_SERVER}/api/pazza/${pid}`, post);
     return response.data;

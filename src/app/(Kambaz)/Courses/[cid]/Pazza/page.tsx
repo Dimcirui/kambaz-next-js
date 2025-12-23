@@ -7,6 +7,7 @@ import { FaSearch, FaPlus, FaQuestionCircle, FaStickyNote, FaUser } from "react-
 import * as client from "./client";
 import PostEditor from "./PostEditor";
 import AnswerSection from "./AnswerSection";
+import FollowupSection from "./FollowupSection";
 
 export default function Pazza() {
   const { cid } = useParams();
@@ -75,6 +76,23 @@ export default function Pazza() {
     } catch (error) {
         console.error("Failed to update answer", error);
         alert("Failed to save answer.");
+    }
+  };
+
+  const handleUpdateFollowups = async (newFollowups: any[]) => {
+    if (!selectedPost || !cid) return;
+
+    try {
+        await client.updatePost(selectedPost._id, { followups: newFollowups });
+        
+        setSelectedPost({
+            ...selectedPost,
+            followups: newFollowups
+        });
+
+    } catch (error) {
+        console.error("Failed to update followups", error);
+        alert("Failed to update discussion.");
     }
   };
 
@@ -220,6 +238,12 @@ export default function Pazza() {
                         answer={selectedPost.instructorAnswer}
                         onSave={(text) => handleUpdateAnswer("INSTRUCTOR", text)}
                         isEditable={true} // hardcoded true for testing, the real value should be role === "FACULTY"
+                    />
+
+                    <hr className="my-5" />
+                    <FollowupSection 
+                        followups={selectedPost.followups || []} 
+                        onUpdate={handleUpdateFollowups}
                     />
                 </div>
             ) : (
