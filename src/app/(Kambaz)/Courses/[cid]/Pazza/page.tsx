@@ -8,24 +8,30 @@ import * as client from "./client";
 import PostEditor from "./PostEditor";
 import AnswerSection from "./AnswerSection";
 import FollowupSection from "./FollowupSection";
+import ManageFolders from "./ManageFolders";
 
 export default function Pazza() {
   const { cid } = useParams();
   
   const [posts, setPosts] = useState<client.PazzaPost[]>([]);
+  const [folders, setFolders] = useState<client.PazzaFolder[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<client.PazzaPost | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFolder, setSelectedFolder] = useState("ALL");
+
+  const [activeTab, setActiveTab] = useState<"QA" | "MANAGE">("QA");
   const [showEditor, setShowEditor] = useState(false);
 
-  const folders = ["ALL", "hw1", "hw2", "project", "exam", "logistics", "other"];
-
-  const fetchPosts = async () => {
+  const fetchData = async () => {
     if (!cid) return;
     try {
-      const data = await client.findPostsForCourse(cid as string);
-      setPosts(data);
+      const [postsData, foldersData] = await Promise.all([
+          client.findPostsForCourse(cid as string),
+          client.findFoldersForCourse(cid as string)
+      ]);
+      setPosts(postsData);
+      setFolders(foldersData);
     } catch (error) {
       console.error(error);
     } finally {
@@ -34,14 +40,14 @@ export default function Pazza() {
   };
 
   useEffect(() => {
-    fetchPosts();
+    fetchData();
   }, [cid]);
 
   const handleCreatePost = async (newPostData: any) => {
     if (!cid) return;
     try {
         const createdPost = await client.createPost(cid as string, newPostData);
-        await fetchPosts();
+        await fetchData();
         setSelectedPost(createdPost);
         setShowEditor(false);
     } catch (error) {
@@ -71,7 +77,7 @@ export default function Pazza() {
             ...updates
         });
 
-        fetchPosts(); 
+        fetchData(); 
         
     } catch (error) {
         console.error("Failed to update answer", error);
@@ -107,23 +113,65 @@ export default function Pazza() {
     return <div className="p-5 text-center"><Spinner animation="border" /></div>;
   }
 
+  if (activeTab === "MANAGE") {
+      return (
+          <Container fluid className="h-100 d-flex flex-column">
+             {/* Top Navigation */}
+             <div className="border-bottom p-3 bg-white">
+                <Nav variant="tabs" activeKey={activeTab}>
+                    <Nav.Item>
+                        <Nav.Link onClick={() => setActiveTab("QA")}>Q&A</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link onClick={() => setActiveTab("MANAGE")}>Manage Class</Nav.Link>
+                    </Nav.Item>
+                </Nav>
+             </div>
+             <div className="p-4 bg-light flex-grow-1">
+                 <ManageFolders 
+                    cid={cid as string} 
+                    folders={folders} 
+                    onFoldersChange={fetchData} 
+                 />
+             </div>
+          </Container>
+      );
+  }
+
   return (
     <Container fluid className="h-100 d-flex flex-column">
       {/* --- Top: Navigation & Filters --- */}
       <div className="border-bottom p-3 bg-light">
-        <h3 className="mb-3">Pazza Q&A - {cid}</h3>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+             <h3 className="mb-0">Pazza Q&A - {cid}</h3>
+             <Nav variant="pills" activeKey={activeTab}>
+                <Nav.Item>
+                    <Nav.Link onClick={() => setActiveTab("QA")} active>Q&A</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link onClick={() => setActiveTab("MANAGE")}>Manage Class</Nav.Link>
+                </Nav.Item>
+             </Nav>
+        </div>
         
         {/* Folder Filters */}
         <div className="d-flex gap-2 overflow-auto pb-2">
+            <Button 
+                variant={selectedFolder === "ALL" ? "dark" : "outline-secondary"}
+                size="sm"
+                onClick={() => setSelectedFolder("ALL")}
+            >
+                ALL
+            </Button>
             {folders.map((folder) => (
                 <Button 
-                    key={folder} 
-                    variant={selectedFolder === folder ? "dark" : "outline-secondary"}
+                    key={folder._id} 
+                    variant={selectedFolder === folder.name ? "dark" : "outline-secondary"}
                     size="sm"
-                    onClick={() => setSelectedFolder(folder)}
+                    onClick={() => setSelectedFolder(folder.name)}
                     className="text-nowrap"
                 >
-                    {folder.toUpperCase()}
+                    {folder.name}
                 </Button>
             ))}
         </div>
@@ -156,7 +204,7 @@ export default function Pazza() {
                 </div>
             </div>
 
-            {/* Posts List (Scrollable) */}
+            {/* Posts List */}
             <div className="overflow-auto flex-grow-1">
                 {filteredPosts.length === 0 && (
                     <div className="text-center p-4 text-muted small">No posts found.</div>
@@ -200,7 +248,7 @@ export default function Pazza() {
                 <PostEditor 
                     onCancel={() => setShowEditor(false)}
                     onSave={handleCreatePost}
-                    availableFolders={folders}
+                    availableFolders={folders.map(f => f.name)}
                 />
             ) : selectedPost ? (
                 <div className="bg-white p-4 h-100 shadow-sm">
@@ -248,8 +296,8 @@ export default function Pazza() {
                 </div>
             ) : (
                 <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted p-5">
-                    <h4>Select a post to view details</h4>
-                    <p>or click &quot;New Post&quot; to start a discussion</p>
+                    <h4>Select a post or create a new one</h4>
+                    {folders.length === 0 && <p className="text-danger">Tip: Go to &quot;Manage Class&quot; to create some folders first!</p>}
                 </div>
             )}
         </Col>
