@@ -3,45 +3,64 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Col, Container, Form, Nav, Row, Spinner, Badge, Card } from "react-bootstrap";
-import { FaSearch, FaPlus, FaQuestionCircle, FaStickyNote, FaUser } from "react-icons/fa";
+import { FaSearch, FaPlus, FaQuestionCircle, FaStickyNote, FaUser, FaTrash } from "react-icons/fa";
 import * as client from "./client";
 import PostEditor from "./PostEditor";
 import AnswerSection from "./AnswerSection";
 import FollowupSection from "./FollowupSection";
+import ManageFolders from "./ManageFolders";
 
 export default function Pazza() {
   const { cid } = useParams();
   
   const [posts, setPosts] = useState<client.PazzaPost[]>([]);
+  const [folders, setFolders] = useState<client.PazzaFolder[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<client.PazzaPost | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFolder, setSelectedFolder] = useState("ALL");
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  const [activeTab, setActiveTab] = useState<"QA" | "MANAGE">("QA");
   const [showEditor, setShowEditor] = useState(false);
 
-  const folders = ["ALL", "hw1", "hw2", "project", "exam", "logistics", "other"];
-
-  const fetchPosts = async () => {
+  const fetchData = async () => {
     if (!cid) return;
     try {
-      const data = await client.findPostsForCourse(cid as string);
-      setPosts(data);
+      const [postsData, foldersData] = await Promise.all([
+          client.findPostsForCourse(cid as string),
+          client.findFoldersForCourse(cid as string),
+      ]);
+      setPosts(postsData);
+      setFolders(foldersData);
     } catch (error) {
       console.error(error);
+    }
+
+    try {
+      const userData = await client.fetchProfile();
+      setCurrentUser(userData);
+    } catch (error) {
+      console.warn("Fetch profile failed, falling back to guest mode.");
+      setCurrentUser({ _id: "guest", username: "Guest User", role: "STUDENT" });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPosts();
+    fetchData();
   }, [cid]);
 
   const handleCreatePost = async (newPostData: any) => {
-    if (!cid) return;
+    if (!cid || !currentUser) return;
     try {
-        const createdPost = await client.createPost(cid as string, newPostData);
-        await fetchPosts();
+        const postWithAuthor = {
+            ...newPostData,
+            author: currentUser.username || currentUser.firstName,
+        };
+        const createdPost = await client.createPost(cid as string, postWithAuthor);
+        await fetchData();
         setSelectedPost(createdPost);
         setShowEditor(false);
     } catch (error) {
@@ -55,7 +74,7 @@ export default function Pazza() {
 
     const answerData = {
         text: text,
-        author: "Me", // hardcoded for now
+        author: currentUser.username,
         date: new Date().toISOString()
     };
 
@@ -71,7 +90,7 @@ export default function Pazza() {
             ...updates
         });
 
-        fetchPosts(); 
+        fetchData(); 
         
     } catch (error) {
         console.error("Failed to update answer", error);
@@ -79,8 +98,26 @@ export default function Pazza() {
     }
   };
 
+  const handleDeletePost = async () => {
+    if (!selectedPost) return;
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this post? This action cannot be undone.");
+    if (!confirmDelete) return;
+
+    try {
+        await client.deletePost(selectedPost._id);
+        
+        setSelectedPost(null);
+        fetchData();
+        alert("Post deleted successfully.");
+    } catch (error) {
+        console.error("Failed to delete post:", error);
+        alert("Could not delete the post. Please try again.");
+    }
+};
+
   const handleUpdateFollowups = async (newFollowups: any[]) => {
-    if (!selectedPost || !cid) return;
+    if (!selectedPost || !cid || !currentUser) return;
 
     try {
         await client.updatePost(selectedPost._id, { followups: newFollowups });
@@ -107,23 +144,67 @@ export default function Pazza() {
     return <div className="p-5 text-center"><Spinner animation="border" /></div>;
   }
 
+  if (activeTab === "MANAGE") {
+      return (
+          <Container fluid className="h-100 d-flex flex-column">
+             {/* Top Navigation */}
+             <div className="border-bottom p-3 bg-white">
+                <Nav variant="tabs" activeKey={activeTab}>
+                    <Nav.Item>
+                        <Nav.Link onClick={() => setActiveTab("QA")}>Q&A</Nav.Link>
+                    </Nav.Item>
+                    {currentUser?.role === "FACULTY" && (
+                        <Nav.Item>
+                            <Nav.Link onClick={() => setActiveTab("MANAGE")}>Manage Class</Nav.Link>
+                        </Nav.Item>
+                    )}
+                </Nav>
+             </div>
+             <div className="p-4 bg-light flex-grow-1">
+                 <ManageFolders 
+                    cid={cid as string} 
+                    folders={folders} 
+                    onFoldersChange={fetchData} 
+                 />
+             </div>
+          </Container>
+      );
+  }
+
   return (
     <Container fluid className="h-100 d-flex flex-column">
       {/* --- Top: Navigation & Filters --- */}
       <div className="border-bottom p-3 bg-light">
-        <h3 className="mb-3">Pazza Q&A - {cid}</h3>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+             <h3 className="mb-0">Pazza Q&A - {cid}</h3>
+             <Nav variant="pills" activeKey={activeTab}>
+                <Nav.Item>
+                    <Nav.Link onClick={() => setActiveTab("QA")} active>Q&A</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link onClick={() => setActiveTab("MANAGE")}>Manage Class</Nav.Link>
+                </Nav.Item>
+             </Nav>
+        </div>
         
         {/* Folder Filters */}
         <div className="d-flex gap-2 overflow-auto pb-2">
+            <Button 
+                variant={selectedFolder === "ALL" ? "dark" : "outline-secondary"}
+                size="sm"
+                onClick={() => setSelectedFolder("ALL")}
+            >
+                ALL
+            </Button>
             {folders.map((folder) => (
                 <Button 
-                    key={folder} 
-                    variant={selectedFolder === folder ? "dark" : "outline-secondary"}
+                    key={folder._id} 
+                    variant={selectedFolder === folder.name ? "dark" : "outline-secondary"}
                     size="sm"
-                    onClick={() => setSelectedFolder(folder)}
+                    onClick={() => setSelectedFolder(folder.name)}
                     className="text-nowrap"
                 >
-                    {folder.toUpperCase()}
+                    {folder.name}
                 </Button>
             ))}
         </div>
@@ -156,7 +237,7 @@ export default function Pazza() {
                 </div>
             </div>
 
-            {/* Posts List (Scrollable) */}
+            {/* Posts List */}
             <div className="overflow-auto flex-grow-1">
                 {filteredPosts.length === 0 && (
                     <div className="text-center p-4 text-muted small">No posts found.</div>
@@ -200,7 +281,7 @@ export default function Pazza() {
                 <PostEditor 
                     onCancel={() => setShowEditor(false)}
                     onSave={handleCreatePost}
-                    availableFolders={folders}
+                    availableFolders={folders.map(f => f.name)}
                 />
             ) : selectedPost ? (
                 <div className="bg-white p-4 h-100 shadow-sm">
@@ -212,6 +293,15 @@ export default function Pazza() {
                         </h2>
                     </div>
 
+                    <Button 
+                        variant="outline-danger" 
+                        size="sm" 
+                        onClick={handleDeletePost}
+                        title="Delete Post"
+                    >
+                        <FaTrash className="me-1" /> Delete
+                    </Button>
+
                     <div className="d-flex align-items-center text-muted mb-4 border-bottom pb-3">
                         <FaUser className="me-2" />
                         <span className="fw-bold me-3">{selectedPost.author}</span>
@@ -220,16 +310,18 @@ export default function Pazza() {
                         <span className="ms-auto">Views: {selectedPost.views}</span>
                     </div>
 
-                    <div className="mb-5" style={{ whiteSpace: "pre-wrap" }}>
-                        {selectedPost.details}
-                    </div>
+                    <div 
+                        className="mb-5 ql-editor"
+                        style={{ padding: 0 }}
+                        dangerouslySetInnerHTML={{ __html: selectedPost.details }} 
+                    />
 
                     <AnswerSection 
                         title="Student Answer"
                         variant="student"
                         answer={selectedPost.studentAnswer}
                         onSave={(text) => handleUpdateAnswer("STUDENT", text)}
-                        isEditable={true}
+                        isEditable={currentUser?.role === "STUDENT"}
                     />
 
                     <AnswerSection 
@@ -237,7 +329,7 @@ export default function Pazza() {
                         variant="instructor"
                         answer={selectedPost.instructorAnswer}
                         onSave={(text) => handleUpdateAnswer("INSTRUCTOR", text)}
-                        isEditable={true} // hardcoded true for testing, the real value should be role === "FACULTY"
+                        isEditable={currentUser?.role === "FACULTY" || currentUser?.role === "TA"}
                     />
 
                     <hr className="my-5" />
@@ -248,8 +340,8 @@ export default function Pazza() {
                 </div>
             ) : (
                 <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted p-5">
-                    <h4>Select a post to view details</h4>
-                    <p>or click &quot;New Post&quot; to start a discussion</p>
+                    <h4>Select a post or create a new one</h4>
+                    {folders.length === 0 && <p className="text-danger">Tip: Go to &quot;Manage Class&quot; to create some folders first!</p>}
                 </div>
             )}
         </Col>

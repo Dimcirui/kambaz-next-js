@@ -52,18 +52,35 @@ export default function FollowupSection({ followups, onUpdate }: FollowupSection
     onUpdate(updated);
   };
 
+  const handleDeleteFollowup = (index: number) => {
+    if (!window.confirm("Delete this discussion?")) return;
+    
+    const updated = [...followups];
+    updated.splice(index, 1);
+    onUpdate(updated);
+  };
+
   return (
     <div className="mt-5">
       <h5 className="mb-3 text-secondary">Follow-up Discussions</h5>
 
       {/* Render list */}
       {followups.map((followup, idx) => (
-        <FollowupItem 
-          key={followup._id || idx}
-          followup={followup}
-          onResolveToggle={() => toggleResolve(idx)}
-          onReply={(text) => handleReply(idx, text)}
-        />
+        <div key={idx} className="position-relative">
+            <FollowupItem 
+                followup={followup}
+                onResolveToggle={() => toggleResolve(idx)}
+                onReply={(text) => handleReply(idx, text)}
+            />
+            <Button 
+                variant="link" 
+                className="text-danger p-0 position-absolute" 
+                style={{ top: '10px', right: '100px' }}
+                onClick={() => handleDeleteFollowup(idx)}
+            >
+                Delete
+            </Button>
+        </div>
       ))}
 
       {/* Bottom Input Area */}

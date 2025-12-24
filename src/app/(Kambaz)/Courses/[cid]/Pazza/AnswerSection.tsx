@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import { FaEdit, FaUserCircle } from "react-icons/fa";
+import RichTextEditor from "./RichTextEditor";
 
-// 定义回答的数据结构
 interface Answer {
   text: string;
   author: string;
@@ -12,11 +12,11 @@ interface Answer {
 }
 
 interface AnswerSectionProps {
-  title: string; // "Student Answer" 或 "Instructor Answer"
-  answer: Answer | undefined; // 可能还没有回答
+  title: string;
+  answer: Answer | undefined;
   onSave: (text: string) => void;
-  isEditable: boolean; // 是否允许当前用户编辑
-  variant?: "student" | "instructor"; // 样式变体
+  isEditable: boolean;
+  variant?: "student" | "instructor";
 }
 
 export default function AnswerSection({ 
@@ -63,12 +63,10 @@ export default function AnswerSection({
           /* --- Edit Mode --- */
           <div>
             <Form.Group className="mb-3">
-              <Form.Control
-                as="textarea"
-                rows={5}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Write your answer here..."
+              <RichTextEditor 
+                  value={text} 
+                  onChange={setText} 
+                  placeholder="Write your answer here..."
               />
             </Form.Group>
             <div className="d-flex justify-content-end gap-2">
@@ -79,9 +77,12 @@ export default function AnswerSection({
         ) : answer ? (
           /* --- View Mode (Existing Answer) --- */
           <div>
-            <div className="mb-3" style={{ whiteSpace: "pre-wrap" }}>
-              {answer.text}
-            </div>
+            <div 
+                    className="mb-3 ql-editor"
+                    style={{ padding: 0 }}
+                    dangerouslySetInnerHTML={{ __html: answer.text }}
+                />
+            
             <div className="d-flex align-items-center text-muted small border-top pt-2">
               <FaUserCircle className="me-1" />
               <span className="fw-bold me-2">{answer.author}</span>
