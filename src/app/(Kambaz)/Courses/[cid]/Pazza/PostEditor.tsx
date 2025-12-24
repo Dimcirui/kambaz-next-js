@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button, Card, Form, Nav, Alert, Badge } from "react-bootstrap";
+import RichTextEditor from "./RichTextEditor";
 
 interface PostEditorProps {
   onCancel: () => void;
@@ -116,18 +117,17 @@ export default function PostEditor({ onCancel, onSave, availableFolders }: PostE
         />
       </Form.Group>
 
-      {/* 5. Details (HTML / Textarea) */}
+      {/* 5. Details */}
       <Form.Group className="mb-4">
         <Form.Label className="fw-bold">Details</Form.Label>
-        <Form.Control
-          as="textarea"
-          rows={6}
-          placeholder="Enter detailed description..."
-          value={details}
-          onChange={(e) => setDetails(e.target.value)}
+        <RichTextEditor 
+            value={details} 
+            onChange={setDetails} 
+            placeholder="Enter detailed description..." 
         />
-        <Form.Text className="text-muted">
-          * Currently using plain text editor. (Rich Text Editor pending)
+
+        <Form.Text className="text-muted mt-2 d-block">
+          * Supported: Bold, Italic, Lists, Images, etc.
         </Form.Text>
       </Form.Group>
 

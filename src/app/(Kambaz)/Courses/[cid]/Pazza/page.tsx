@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Col, Container, Form, Nav, Row, Spinner, Badge, Card } from "react-bootstrap";
-import { FaSearch, FaPlus, FaQuestionCircle, FaStickyNote, FaUser } from "react-icons/fa";
+import { FaSearch, FaPlus, FaQuestionCircle, FaStickyNote, FaUser, FaTrash } from "react-icons/fa";
 import * as client from "./client";
 import PostEditor from "./PostEditor";
 import AnswerSection from "./AnswerSection";
@@ -84,6 +84,24 @@ export default function Pazza() {
         alert("Failed to save answer.");
     }
   };
+
+  const handleDeletePost = async () => {
+    if (!selectedPost) return;
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this post? This action cannot be undone.");
+    if (!confirmDelete) return;
+
+    try {
+        await client.deletePost(selectedPost._id);
+        
+        setSelectedPost(null);
+        fetchData();
+        alert("Post deleted successfully.");
+    } catch (error) {
+        console.error("Failed to delete post:", error);
+        alert("Could not delete the post. Please try again.");
+    }
+};
 
   const handleUpdateFollowups = async (newFollowups: any[]) => {
     if (!selectedPost || !cid) return;
@@ -260,6 +278,15 @@ export default function Pazza() {
                         </h2>
                     </div>
 
+                    <Button 
+                        variant="outline-danger" 
+                        size="sm" 
+                        onClick={handleDeletePost}
+                        title="Delete Post"
+                    >
+                        <FaTrash className="me-1" /> Delete
+                    </Button>
+
                     <div className="d-flex align-items-center text-muted mb-4 border-bottom pb-3">
                         <FaUser className="me-2" />
                         <span className="fw-bold me-3">{selectedPost.author}</span>
@@ -268,9 +295,11 @@ export default function Pazza() {
                         <span className="ms-auto">Views: {selectedPost.views}</span>
                     </div>
 
-                    <div className="mb-5" style={{ whiteSpace: "pre-wrap" }}>
-                        {selectedPost.details}
-                    </div>
+                    <div 
+                        className="mb-5 ql-editor"
+                        style={{ padding: 0 }}
+                        dangerouslySetInnerHTML={{ __html: selectedPost.details }} 
+                    />
 
                     <AnswerSection 
                         title="Student Answer"
