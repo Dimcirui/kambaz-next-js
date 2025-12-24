@@ -329,7 +329,7 @@ export default function Pazza() {
                         variant="instructor"
                         answer={selectedPost.instructorAnswer}
                         onSave={(text) => handleUpdateAnswer("INSTRUCTOR", text)}
-                        isEditable={currentUser?.role === "FACULTY"}
+                        isEditable={currentUser?.role === "FACULTY" || currentUser?.role === "TA"}
                     />
 
                     <hr className="my-5" />

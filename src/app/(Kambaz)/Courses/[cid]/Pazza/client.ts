@@ -65,6 +65,8 @@ export const deleteFolder = async (fid: string) => {
 };
 
 export const fetchProfile = async () => {
-    const response = await axios.get(`${REMOTE_SERVER}/api/users/profile`);
+    const response = await axios.get(`${REMOTE_SERVER}/api/users/profile`, {
+        withCredentials: true
+    });
     return response.data;
 };
