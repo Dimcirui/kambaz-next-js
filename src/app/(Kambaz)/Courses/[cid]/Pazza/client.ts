@@ -63,3 +63,8 @@ export const deleteFolder = async (fid: string) => {
     const response = await axios.delete(`${REMOTE_SERVER}/api/pazza/folders/${fid}`);
     return response.data;
 };
+
+export const fetchProfile = async () => {
+    const response = await axios.get(`${REMOTE_SERVER}/api/users/profile`);
+    return response.data;
+};

@@ -19,6 +19,7 @@ export default function Pazza() {
   const [selectedPost, setSelectedPost] = useState<client.PazzaPost | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFolder, setSelectedFolder] = useState("ALL");
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   const [activeTab, setActiveTab] = useState<"QA" | "MANAGE">("QA");
   const [showEditor, setShowEditor] = useState(false);
@@ -28,12 +29,20 @@ export default function Pazza() {
     try {
       const [postsData, foldersData] = await Promise.all([
           client.findPostsForCourse(cid as string),
-          client.findFoldersForCourse(cid as string)
+          client.findFoldersForCourse(cid as string),
       ]);
       setPosts(postsData);
       setFolders(foldersData);
     } catch (error) {
       console.error(error);
+    }
+
+    try {
+      const userData = await client.fetchProfile();
+      setCurrentUser(userData);
+    } catch (error) {
+      console.warn("Fetch profile failed, falling back to guest mode.");
+      setCurrentUser({ _id: "guest", username: "Guest User", role: "STUDENT" });
     } finally {
       setLoading(false);
     }
@@ -44,9 +53,13 @@ export default function Pazza() {
   }, [cid]);
 
   const handleCreatePost = async (newPostData: any) => {
-    if (!cid) return;
+    if (!cid || !currentUser) return;
     try {
-        const createdPost = await client.createPost(cid as string, newPostData);
+        const postWithAuthor = {
+            ...newPostData,
+            author: currentUser.username || currentUser.firstName,
+        };
+        const createdPost = await client.createPost(cid as string, postWithAuthor);
         await fetchData();
         setSelectedPost(createdPost);
         setShowEditor(false);
@@ -61,7 +74,7 @@ export default function Pazza() {
 
     const answerData = {
         text: text,
-        author: "Me", // hardcoded for now
+        author: currentUser.username,
         date: new Date().toISOString()
     };
 
@@ -104,7 +117,7 @@ export default function Pazza() {
 };
 
   const handleUpdateFollowups = async (newFollowups: any[]) => {
-    if (!selectedPost || !cid) return;
+    if (!selectedPost || !cid || !currentUser) return;
 
     try {
         await client.updatePost(selectedPost._id, { followups: newFollowups });
@@ -140,9 +153,11 @@ export default function Pazza() {
                     <Nav.Item>
                         <Nav.Link onClick={() => setActiveTab("QA")}>Q&A</Nav.Link>
                     </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link onClick={() => setActiveTab("MANAGE")}>Manage Class</Nav.Link>
-                    </Nav.Item>
+                    {currentUser?.role === "FACULTY" && (
+                        <Nav.Item>
+                            <Nav.Link onClick={() => setActiveTab("MANAGE")}>Manage Class</Nav.Link>
+                        </Nav.Item>
+                    )}
                 </Nav>
              </div>
              <div className="p-4 bg-light flex-grow-1">
@@ -306,7 +321,7 @@ export default function Pazza() {
                         variant="student"
                         answer={selectedPost.studentAnswer}
                         onSave={(text) => handleUpdateAnswer("STUDENT", text)}
-                        isEditable={true}
+                        isEditable={currentUser?.role === "STUDENT"}
                     />
 
                     <AnswerSection 
@@ -314,7 +329,7 @@ export default function Pazza() {
                         variant="instructor"
                         answer={selectedPost.instructorAnswer}
                         onSave={(text) => handleUpdateAnswer("INSTRUCTOR", text)}
-                        isEditable={true} // hardcoded true for testing, the real value should be role === "FACULTY"
+                        isEditable={currentUser?.role === "FACULTY"}
                     />
 
                     <hr className="my-5" />
