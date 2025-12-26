@@ -9,6 +9,7 @@ import PostEditor from "./PostEditor";
 import AnswerSection from "./AnswerSection";
 import FollowupSection from "./FollowupSection";
 import ManageFolders from "./ManageFolders";
+import ClassAtAGlance from "./ClassAtAGlance";
 
 export default function Pazza() {
   const { cid } = useParams();
@@ -339,10 +340,7 @@ export default function Pazza() {
                     />
                 </div>
             ) : (
-                <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted p-5">
-                    <h4>Select a post or create a new one</h4>
-                    {folders.length === 0 && <p className="text-danger">Tip: Go to &quot;Manage Class&quot; to create some folders first!</p>}
-                </div>
+                <ClassAtAGlance posts={posts} />
             )}
         </Col>
       </Row>
