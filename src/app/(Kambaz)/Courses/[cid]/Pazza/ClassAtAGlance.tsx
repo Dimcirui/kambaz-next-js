@@ -106,11 +106,7 @@ export default function ClassAtAGlance({ posts }: ClassAtAGlanceProps) {
               </ListGroup>
           </Col>
       </Row>
-
-      {/* --- Footer Note --- */}
-      <div className="mt-4 p-3 bg-secondary-subtle rounded text-center text-muted small">
-          Introducing AI-Generated Summaries for Followups and Folders (Coming Soon)
-      </div>
+      
     </div>
   );
 }

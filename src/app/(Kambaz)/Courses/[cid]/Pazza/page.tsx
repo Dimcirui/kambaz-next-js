@@ -2,14 +2,31 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Button, Col, Container, Form, Nav, Row, Spinner, Badge, Card } from "react-bootstrap";
-import { FaSearch, FaPlus, FaQuestionCircle, FaStickyNote, FaUser, FaTrash } from "react-icons/fa";
+import { Button, Col, Container, Form, Row, Spinner, Badge, Nav, Dropdown } from "react-bootstrap";
+import { FaQuestion, FaStickyNote, FaUser, FaBars } from "react-icons/fa";
 import * as client from "./client";
 import PostEditor from "./PostEditor";
 import AnswerSection from "./AnswerSection";
 import FollowupSection from "./FollowupSection";
 import ManageFolders from "./ManageFolders";
 import ClassAtAGlance from "./ClassAtAGlance";
+
+const styles = {
+  topHeaderBg: "#3b5998", 
+  topHeaderColor: "#ffffff",
+  
+  tabInactiveBg: "#f6f6f6",
+  tabActiveBg: "#ffffff",
+  tabBorder: "#dddddd",
+  
+  sidebarBg: "#f2f2f2",
+  
+  postSelectedBg: "#e1ecf4",
+  postSelectedBorder: "#2976a3",
+  
+  questionIconColor: "#cf6d29",
+  noteIconColor: "#2976a3",
+};
 
 export default function Pazza() {
   const { cid } = useParams();
@@ -20,10 +37,11 @@ export default function Pazza() {
   const [selectedPost, setSelectedPost] = useState<client.PazzaPost | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFolder, setSelectedFolder] = useState("ALL");
-  const [currentUser, setCurrentUser] = useState<any>(null);
-
+  const [filterType, setFilterType] = useState("All Posts");
+  
   const [activeTab, setActiveTab] = useState<"QA" | "MANAGE">("QA");
   const [showEditor, setShowEditor] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   const fetchData = async () => {
     if (!cid) return;
@@ -35,7 +53,7 @@ export default function Pazza() {
       setPosts(postsData);
       setFolders(foldersData);
     } catch (error) {
-      console.error(error);
+      console.error("Failed to load posts/folders:", error);
     }
 
     try {
@@ -141,207 +159,242 @@ export default function Pazza() {
     return matchesSearch && matchesFolder;
   });
 
+  const getSnippet = (html: string) => {
+    const tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    const text = tmp.textContent || tmp.innerText || "";
+    return text.substring(0, 80) + (text.length > 80 ? "..." : "");
+  };
+
   if (loading) {
     return <div className="p-5 text-center"><Spinner animation="border" /></div>;
   }
 
   if (activeTab === "MANAGE") {
       return (
-          <Container fluid className="h-100 d-flex flex-column">
-             {/* Top Navigation */}
-             <div className="border-bottom p-3 bg-white">
-                <Nav variant="tabs" activeKey={activeTab}>
-                    <Nav.Item>
-                        <Nav.Link onClick={() => setActiveTab("QA")}>Q&A</Nav.Link>
-                    </Nav.Item>
-                    {currentUser?.role === "FACULTY" && (
-                        <Nav.Item>
-                            <Nav.Link onClick={() => setActiveTab("MANAGE")}>Manage Class</Nav.Link>
-                        </Nav.Item>
-                    )}
+          <Container fluid className="h-100 d-flex flex-column bg-light p-0">
+             <div className="px-3 py-2 d-flex justify-content-between align-items-center" 
+                  style={{ backgroundColor: styles.topHeaderBg, color: styles.topHeaderColor }}>
+                <div className="fw-bold fs-5">{cid} Piazza</div>
+                <Nav className="small">
+                    <Nav.Link onClick={() => setActiveTab("QA")} className="text-white-50">Q & A</Nav.Link>
+                    <Nav.Link className="text-white fw-bold active">Manage Class</Nav.Link>
                 </Nav>
              </div>
-             <div className="p-4 bg-light flex-grow-1">
-                 <ManageFolders 
-                    cid={cid as string} 
-                    folders={folders} 
-                    onFoldersChange={fetchData} 
-                 />
+             <div className="p-0 flex-grow-1 bg-white overflow-auto">
+                 <ManageFolders cid={cid as string} folders={folders} onFoldersChange={fetchData} />
              </div>
           </Container>
       );
   }
 
   return (
-    <Container fluid className="h-100 d-flex flex-column">
-      {/* --- Top: Navigation & Filters --- */}
-      <div className="border-bottom p-3 bg-light">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-             <h3 className="mb-0">Pazza Q&A - {cid}</h3>
-             <Nav variant="pills" activeKey={activeTab}>
-                <Nav.Item>
-                    <Nav.Link onClick={() => setActiveTab("QA")} active>Q&A</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link onClick={() => setActiveTab("MANAGE")}>Manage Class</Nav.Link>
-                </Nav.Item>
-             </Nav>
-        </div>
+    <Container fluid className="h-100 d-flex flex-column p-0">
+
+      {/* --- Header --- */}
+      <div className="px-3 py-1 d-flex justify-content-between align-items-center shadow-sm" 
+           style={{ backgroundColor: styles.topHeaderBg, color: styles.topHeaderColor, height: "50px", zIndex: 10 }}>
         
-        {/* Folder Filters */}
-        <div className="d-flex gap-2 overflow-auto pb-2">
-            <Button 
-                variant={selectedFolder === "ALL" ? "dark" : "outline-secondary"}
-                size="sm"
-                onClick={() => setSelectedFolder("ALL")}
-            >
-                ALL
-            </Button>
-            {folders.map((folder) => (
-                <Button 
-                    key={folder._id} 
-                    variant={selectedFolder === folder.name ? "dark" : "outline-secondary"}
-                    size="sm"
-                    onClick={() => setSelectedFolder(folder.name)}
-                    className="text-nowrap"
-                >
-                    {folder.name}
-                </Button>
-            ))}
+        <div className="d-flex align-items-center gap-3">
+             <span className="fw-bold fs-5" style={{ letterSpacing: "1px" }}>piazza</span>
+             <span className="opacity-50">|</span>
+             <span className="fw-bold">{cid}</span>
+        </div>
+
+        <div className="d-flex align-items-center gap-4 small fw-bold">
+            <span className="cursor-pointer text-white border-bottom border-2 border-white pb-1">Q & A</span>
+            <span className="cursor-pointer text-white-50 hover-text-white">Resources</span>
+            <span className="cursor-pointer text-white-50 hover-text-white">Statistics</span>
+            {currentUser?.role === "FACULTY" && (
+                <span className="cursor-pointer text-white-50 hover-text-white" onClick={() => setActiveTab("MANAGE")}>Manage Class</span>
+            )}
+        </div>
+
+        <div className="d-flex align-items-center gap-2 small">
+            <FaUser />
+            <span>{currentUser?.username || "Guest"}</span>
         </div>
       </div>
 
-      <Row className="flex-grow-1" style={{ minHeight: "600px" }}>
+      <Row className="flex-grow-1" style={{ minHeight: "0" }}>
         
-        {/* --- Left Sidebar: List of Posts --- */}
-        <Col md={4} lg={3} className="border-end p-0 bg-white d-flex flex-column">
-            {/* Search Bar & New Post Button */}
-            <div className="p-2 border-bottom bg-secondary-subtle">
+        {/* --- Left Sidebar --- */}
+        <Col md={3} className="d-flex flex-column border-end" style={{ backgroundColor: styles.sidebarBg }}>
+            
+            {/* Header: New Post + Search */}
+            <div className="p-2 border-bottom d-flex gap-2 align-items-center bg-white">
                 <Button 
                     variant="primary" 
-                    className="w-100 mb-2 fw-bold" 
-                    onClick={() => { 
-                        setShowEditor(true); 
-                        setSelectedPost(null);
-                    }}
+                    size="sm"
+                    className="fw-bold text-nowrap" 
+                    onClick={() => { setShowEditor(true); setSelectedPost(null); }}
                 >
-                    <FaPlus className="me-2" /> New Post
+                    New Post
                 </Button>
-                <div className="position-relative">
-                    <FaSearch className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" />
+                
+                <div className="position-relative flex-grow-1">
                     <Form.Control 
-                        placeholder="Search posts..." 
-                        className="ps-5"
+                        size="sm"
+                        placeholder="Search or add a post..." 
+                        className="bg-light"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
             </div>
 
-            {/* Posts List */}
-            <div className="overflow-auto flex-grow-1">
-                {filteredPosts.length === 0 && (
-                    <div className="text-center p-4 text-muted small">No posts found.</div>
-                )}
+            {/* Dropdown */}
+            <div className="px-2 py-1 border-bottom bg-light d-flex justify-content-between align-items-center" style={{ fontSize: "0.85rem" }}>
+                <Dropdown>
+                    <Dropdown.Toggle variant="link" id="dropdown-basic" className="text-dark text-decoration-none p-0 fw-bold border-0 shadow-none" size="sm">
+                        {filterType}
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => setFilterType("All Posts")}>All Posts</Dropdown.Item>
+                        <Dropdown.Item onClick={() => setFilterType("Unread Posts")}>Unread Posts</Dropdown.Item>
+                        <Dropdown.Item onClick={() => setFilterType("Unresolved Posts")}>Unresolved Posts</Dropdown.Item>
+                        <Dropdown.Item onClick={() => setFilterType("Following")}>Following</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
                 
-                {filteredPosts.map((post) => (
-                    <div 
-                        key={post._id}
-                        onClick={() => {
-                            setSelectedPost(post);
-                            setShowEditor(false);
-                        }}
-                        className={`p-3 border-bottom cursor-pointer ${selectedPost?._id === post._id && !showEditor ? "bg-primary-subtle border-start border-primary border-4" : "hover-bg-light"}`}
-                        style={{ cursor: "pointer" }}
-                    >
-                        <div className="d-flex justify-content-between align-items-start mb-1">
-                            <div className="fw-bold text-truncate" style={{ maxWidth: "80%" }}>
-                                {post.type === "QUESTION" ? <FaQuestionCircle className="text-danger me-1" /> : <FaStickyNote className="text-warning me-1" />}
-                                {post.title}
+                <div className="text-muted cursor-pointer">
+                    <FaBars />
+                </div>
+            </div>
+
+            {/* Post List */}
+            <div className="overflow-auto flex-grow-1 bg-white">
+                {filteredPosts.length === 0 && <div className="text-center p-4 text-muted small">No posts found.</div>}
+                
+                {filteredPosts.map((post) => {
+                    const isSelected = selectedPost?._id === post._id && !showEditor;
+                    return (
+                        <div 
+                            key={post._id}
+                            onClick={() => { setSelectedPost(post); setShowEditor(false); }}
+                            className="p-2 border-bottom cursor-pointer position-relative"
+                            style={{ 
+                                backgroundColor: isSelected ? styles.postSelectedBg : "white",
+                                minHeight: "60px"
+                            }}
+                        >
+                            {isSelected && (
+                                <div className="position-absolute top-0 start-0 bottom-0" 
+                                     style={{ width: "4px", backgroundColor: styles.postSelectedBorder }}></div>
+                            )}
+
+                            <div className="ps-2">
+                                <div className="d-flex justify-content-between align-items-center mb-1">
+                                    <div className="d-flex align-items-center text-truncate fw-bold" style={{ maxWidth: "80%", fontSize: "0.9rem" }}>
+                                        {post.type === "QUESTION" ? 
+                                            <FaQuestion className="me-2 flex-shrink-0" style={{ color: styles.questionIconColor, fontSize: "0.8rem" }} /> : 
+                                            <FaStickyNote className="me-2 flex-shrink-0" style={{ color: styles.noteIconColor, fontSize: "0.8rem" }} />
+                                        }
+                                        <span className="text-truncate text-dark">{post.title}</span>
+                                    </div>
+                                    <small className="text-secondary" style={{ fontSize: "0.7rem" }}>
+                                        {new Date(post.date).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' })}
+                                    </small>
+                                </div>
+                                <div className="text-secondary text-truncate small ps-3" style={{ fontSize: "0.8rem", opacity: 0.8 }}>
+                                    {getSnippet(post.details)}
+                                </div>
                             </div>
-                            <small className="text-muted text-nowrap">
-                                {new Date(post.date).toLocaleDateString()}
-                            </small>
                         </div>
-                        <div className="small text-muted text-truncate mb-1">
-                            {post.details.replace(/<[^>]+>/g, '')}
-                        </div>
-                        <div className="d-flex gap-1 mt-2">
-                             {post.folders.map(f => (
-                                 <Badge key={f} bg="secondary" style={{fontSize: "0.6rem"}}>{f}</Badge>
-                             ))}
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </Col>
 
-        {/* --- Right Content: Post Details --- */}
-        <Col md={8} lg={9} className="p-0 bg-light overflow-auto">
-            {showEditor ? (
-                <PostEditor 
-                    onCancel={() => setShowEditor(false)}
-                    onSave={handleCreatePost}
-                    availableFolders={folders.map(f => f.name)}
-                />
-            ) : selectedPost ? (
-                <div className="bg-white p-4 h-100 shadow-sm">
-                    <div className="d-flex align-items-center mb-3">
-                        <h2 className="mb-0 flex-grow-1">
-                            {selectedPost.type === "QUESTION" && <span className="badge bg-danger me-2">Q</span>}
-                            {selectedPost.type === "NOTE" && <span className="badge bg-warning text-dark me-2">Note</span>}
-                            {selectedPost.title}
-                        </h2>
-                    </div>
-
-                    <Button 
-                        variant="outline-danger" 
-                        size="sm" 
-                        onClick={handleDeletePost}
-                        title="Delete Post"
-                    >
-                        <FaTrash className="me-1" /> Delete
-                    </Button>
-
-                    <div className="d-flex align-items-center text-muted mb-4 border-bottom pb-3">
-                        <FaUser className="me-2" />
-                        <span className="fw-bold me-3">{selectedPost.author}</span>
-                        <span className="me-3">|</span>
-                        <span>{new Date(selectedPost.date).toLocaleString()}</span>
-                        <span className="ms-auto">Views: {selectedPost.views}</span>
-                    </div>
-
-                    <div 
-                        className="mb-5 ql-editor"
-                        style={{ padding: 0 }}
-                        dangerouslySetInnerHTML={{ __html: selectedPost.details }} 
-                    />
-
-                    <AnswerSection 
-                        title="Student Answer"
-                        variant="student"
-                        answer={selectedPost.studentAnswer}
-                        onSave={(text) => handleUpdateAnswer("STUDENT", text)}
-                        isEditable={currentUser?.role === "STUDENT"}
-                    />
-
-                    <AnswerSection 
-                        title="Instructor Answer"
-                        variant="instructor"
-                        answer={selectedPost.instructorAnswer}
-                        onSave={(text) => handleUpdateAnswer("INSTRUCTOR", text)}
-                        isEditable={currentUser?.role === "FACULTY" || currentUser?.role === "TA"}
-                    />
-
-                    <hr className="my-5" />
-                    <FollowupSection 
-                        followups={selectedPost.followups || []} 
-                        onUpdate={handleUpdateFollowups}
-                    />
+        {/* --- Right Content --- */}
+        <Col md={9} className="d-flex flex-column h-100 bg-white">
+            
+            {/* Folder Tabs */}
+            <div className="px-3 pt-2 border-bottom bg-light d-flex align-items-end" style={{ minHeight: "40px" }}>
+                <div 
+                    className={`px-3 py-1 small fw-bold border border-bottom-0 rounded-top me-1 cursor-pointer ${selectedFolder === "ALL" ? "bg-white text-dark" : "text-secondary"}`}
+                    style={{ 
+                        backgroundColor: selectedFolder === "ALL" ? styles.tabActiveBg : styles.tabInactiveBg,
+                        borderColor: styles.tabBorder,
+                        top: "1px", position: "relative"
+                    }}
+                    onClick={() => setSelectedFolder("ALL")}
+                >
+                    All Posts
                 </div>
-            ) : (
-                <ClassAtAGlance posts={posts} />
-            )}
+                {folders.map((folder) => (
+                    <div 
+                        key={folder._id}
+                        className={`px-3 py-1 small fw-bold border border-bottom-0 rounded-top me-1 cursor-pointer ${selectedFolder === folder.name ? "bg-white text-dark" : "text-secondary"}`}
+                        style={{ 
+                            backgroundColor: selectedFolder === folder.name ? styles.tabActiveBg : styles.tabInactiveBg,
+                            borderColor: styles.tabBorder,
+                            top: "1px", position: "relative",
+                            whiteSpace: "nowrap"
+                        }}
+                        onClick={() => setSelectedFolder(folder.name)}
+                    >
+                        {folder.name}
+                    </div>
+                ))}
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex-grow-1 overflow-auto p-0">
+                {showEditor ? (
+                    <div className="p-4">
+                        <PostEditor 
+                            onCancel={() => setShowEditor(false)}
+                            onSave={handleCreatePost}
+                            availableFolders={folders.map(f => f.name)} 
+                        />
+                    </div>
+                ) : selectedPost ? (
+                    <div className="p-4 h-100">
+                        <div className="mb-3">
+                            <h3 className="mb-2 fw-bold text-dark">{selectedPost.title}</h3>
+                            <div className="d-flex gap-1">
+                                {selectedPost.folders.map(f => (
+                                    <Badge key={f} bg="light" text="dark" className="border fw-normal">{f}</Badge>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        <div className="d-flex align-items-center text-muted mb-4 pb-2 border-bottom small">
+                            {selectedPost.type === "QUESTION" ? 
+                                <span className="badge bg-danger me-2">Question</span> : 
+                                <span className="badge bg-primary me-2">Note</span>
+                            }
+                            <span className="fw-bold text-dark me-2">{selectedPost.author}</span>
+                            <span>posted on {new Date(selectedPost.date).toLocaleString()}</span>
+                            <span className="ms-auto text-primary cursor-pointer" onClick={handleDeletePost}>Delete</span>
+                        </div>
+
+                        <div className="mb-5 ql-editor" style={{ padding: 0 }} dangerouslySetInnerHTML={{ __html: selectedPost.details }} />
+
+                        <AnswerSection 
+                            title="Student Answer" 
+                            variant="student" 
+                            answer={selectedPost.studentAnswer} 
+                            onSave={(text) => handleUpdateAnswer("STUDENT", text)} 
+                            isEditable={currentUser?.role === "STUDENT" || currentUser?.role === "FACULTY"} 
+                        />
+                        <AnswerSection 
+                            title="Instructor Answer" 
+                            variant="instructor" 
+                            answer={selectedPost.instructorAnswer} 
+                            onSave={(text) => handleUpdateAnswer("INSTRUCTOR", text)} 
+                            isEditable={currentUser?.role === "FACULTY"} 
+                        />
+                        
+                        <hr className="my-5" />
+                        <FollowupSection followups={selectedPost.followups || []} onUpdate={handleUpdateFollowups} />
+                    </div>
+                ) : (
+                    <ClassAtAGlance posts={posts} />
+                )}
+            </div>
         </Col>
       </Row>
     </Container>
