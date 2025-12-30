@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Col, Container, Form, Row, Spinner, Badge, Nav, Dropdown } from "react-bootstrap";
-import { FaSearch, FaPlus, FaQuestion, FaStickyNote, FaUser, FaRegcircle, FaBars } from "react-icons/fa";
+import { FaQuestion, FaStickyNote, FaUser, FaBars } from "react-icons/fa";
 import * as client from "./client";
 import PostEditor from "./PostEditor";
 import AnswerSection from "./AnswerSection";
