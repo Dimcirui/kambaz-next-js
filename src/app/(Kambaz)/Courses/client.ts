@@ -34,8 +34,9 @@ export const findMyCourses = async () => {
   return data;
 };
 
-export const findMyEnrollments = async (userId: string) => {
-  const { data } = await axios.get(`${ENROLLMENTS_API}/${userId}`);
+export const findMyEnrollments = async (userId?: string) => {
+  const url = userId ? `${ENROLLMENTS_API}/${userId}` : `${ENROLLMENTS_API}/current`;
+  const { data } = await axiosWithCredentials.get(url);
   return data;
 };
 
@@ -93,13 +94,14 @@ export const findGradesForAssignment = async (assignmentId: string) => {
 };
 
 // --- Enrollment / User Functions ---
-export const enrollInCourse = async (userId: string, courseId: string) => {
-  const response = await axios.post(ENROLLMENTS_API, { userId, courseId });
+export const enrollInCourse = async (courseId: string, userId?: string) => {
+  const response = await axiosWithCredentials.post(ENROLLMENTS_API, { userId, courseId });
   return response.data;
 };
 
-export const unenrollFromCourse = async (userId: string, courseId: string) => {
-  const response = await axios.delete(`${ENROLLMENTS_API}/${userId}/${courseId}`);
+export const unenrollFromCourse = async (courseId: string, userId?: string) => {
+  const url = userId ? `${ENROLLMENTS_API}/${userId}/${courseId}` : `${ENROLLMENTS_API}/current/${courseId}`;
+  const response = await axiosWithCredentials.delete(url);
   return response.data;
 };
 
