@@ -1,6 +1,6 @@
 import axios from "axios";
-export const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
-export const USERS_API = `${HTTP_SERVER}/api/users`;
+export const REMOTE_SERVER = process.env.NEXT_PUBLIC_REMOTE_SERVER || "http://localhost:4000";
+export const USERS_API = `${REMOTE_SERVER}/api/users`;
 export const findAllUsers = async () => {
   const response = await axiosWithCredentials.get(USERS_API);
   return response.data;
@@ -34,7 +34,7 @@ export const createUser = async (user: any) => {
 
 
 const axiosWithCredentials = axios.create({ 
-  baseURL: HTTP_SERVER,
+  baseURL: REMOTE_SERVER,
   withCredentials: true });
 
 export const signin = async (credentials: any) => {

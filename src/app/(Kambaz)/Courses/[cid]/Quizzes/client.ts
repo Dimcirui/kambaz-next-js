@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const REMOTE_SERVER = process.env.NEXT_PUBLIC_REMOTE_SERVER || "http://localhost:4000";
+const REMOTE_SERVER = process.env.NEXT_PUBLIC_REMOTE_SERVER || "http://localhost:4000" || "http://localhost:4000";
 const COURSES_API = `${REMOTE_SERVER}/api/courses`;
 const QUIZZES_API = `${REMOTE_SERVER}/api/quizzes`;
 const QUESTIONS_API = `${REMOTE_SERVER}/api/questions`;
